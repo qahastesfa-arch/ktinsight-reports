@@ -1,96 +1,294 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Language Switch Example</title>
-<style>
-  body {
-    background:#1a1a1a;
-    color:#f5f5f5;
-    font-family:"Segoe UI",Arial,sans-serif;
-  }
-  header {
-    background:#2a0000;
-    color:#f5f5f5;
-    padding:25px 20px 40px;
-    position:relative;
-    text-align:center;
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Report Violence Against the Ethiopian Orthodox Church</title>
+  <style>
+    /* Base theme (somber) */
+    body { font-family: "Segoe UI", Arial, sans-serif; background:#1a1a1a; color:#f5f5f5; margin:0; }
+    header {
+      text-align:center;
+      background: linear-gradient(180deg, #4b0000 0%, #2a0000 100%);
+      color:#f5f5f5;
+      padding:25px 20px 40px;
+      border-bottom:2px solid #8c1111;
+      position:relative;  /* for absolute child */
+    }
+    img.logo { max-width:240px; height:auto; margin-bottom:15px; filter:grayscale(20%) contrast(120%); }
 
-  /* your style */
-  .language-switch {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    background-color: #2b2b2b;
-    border: 1px solid #555;
-    border-radius: 5px;
-    padding: 5px 10px;
-    font-size: 0.9em;
-  }
-  .language-switch label { margin-right: 6px; color: #f5f5f5; }
-  .language-switch select {
-    background: #2b2b2b;
-    color: #f5f5f5;
-    border: none;
-    font-size: 0.9em;
-  }
+    main { max-width:600px; margin:40px auto; background:#2b2b2b; padding:30px;
+           border-radius:10px; box-shadow:0 0 20px rgba(0,0,0,.5); }
 
-  main { max-width:600px; margin:30px auto; }
-</style>
+    h1 { color:#f0d68a; margin: 0 0 4px; }
+    h2 { color:#ddd; margin:10px 0 12px; font-weight:normal; }
+    p  { line-height:1.6; color:#e0e0e0; }
+
+    /* Form */
+    form label { display:block; margin-top:15px; font-weight:bold; color:#f0d68a; }
+    input, textarea, select, button { font-family:inherit; }
+    input, textarea, select {
+      width:100%; padding:10px; margin-top:5px; border-radius:5px;
+      border:1px solid #555; background:#1e1e1e; color:#f5f5f5; font-size:1em;
+    }
+    input:focus, textarea:focus { outline:2px solid #8c1111; background:#262626; }
+    button {
+      background:#8c1111; color:#fff; border:none; padding:12px 20px; font-size:1em;
+      border-radius:5px; margin-top:25px; cursor:pointer; width:100%;
+    }
+    button:hover { background:#b11b1b; }
+
+    .msg { margin-top:15px; padding:10px; border-radius:6px; display:none; }
+    .msg.ok  { background:#103c10; color:#bdf3bd; }
+    .msg.err { background:#3c1010; color:#f3bdbd; }
+
+    footer { text-align:center; margin:50px 0 20px; font-size:.9em; color:#999; }
+
+    /* Language switcher (clearly visible, responsive) */
+    .language-switch {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background-color: #2b2b2b;
+      border: 1px solid #888;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 0.9em;
+      box-shadow: 0 2px 6px rgba(0,0,0,.35);
+      z-index: 1000;
+    }
+    .language-switch label { margin-right: 8px; color: #f5f5f5; }
+    .language-switch select {
+      background: #2b2b2b;
+      color: #f5f5f5;
+      border: 1px solid #666;
+      border-radius: 4px;
+      font-size: 0.95em;
+      padding: 2px 6px;
+    }
+    @media (max-width: 640px) {
+      .language-switch {
+        position: static;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin: 10px auto 0;
+      }
+      header { padding-top: 10px; }
+    }
+  </style>
 </head>
 <body>
+  <header>
+    <!-- Language preference -->
+    <div class="language-switch">
+      <label for="language" data-i18n="lang_label">Language:</label>
+      <select name="language" id="language" aria-label="Language">
+        <option value="en" selected>English</option>
+        <option value="am">አማርኛ (Amharic)</option>
+      </select>
+    </div>
 
-<header>
-  <div class="language-switch">
-    <label for="lang">Language:</label>
-    <select id="lang">
-      <option value="en" selected>English</option>
-      <option value="am">አማርኛ (Amharic)</option>
-    </select>
-  </div>
+    <!-- Logo -->
+    <img
+      src="https://raw.githubusercontent.com/qahastesfa-arch/ktinsight-reports/main/EOTC.png"
+      alt="Ethiopian Orthodox Church Logo"
+      class="logo"
+    />
 
-  <h1 id="title">Report Violence Against the Ethiopian Orthodox Church</h1>
-  <h2 id="subtitle">Incident Reporting Portal</h2>
-</header>
+    <!-- Main title (top) -->
+    <h1 data-i18n="title_main">Report Violence Against the Ethiopian Orthodox Church</h1>
 
-<main>
-  <p id="intro">
-    This site is dedicated to collecting verified reports of violence, persecution, or vandalism directed
-    against <strong>Ethiopian Orthodox Church worshippers, priests, and church property</strong>.
-  </p>
-</main>
+    <!-- Subheading (immediately under the title) -->
+    <h2 data-i18n="subtitle">Incident Reporting Portal</h2>
+  </header>
 
-<script>
-const texts = {
-  en: {
-    title: "Report Violence Against the Ethiopian Orthodox Church",
-    subtitle: "Incident Reporting Portal",
-    intro:
-      "This site is dedicated to collecting verified reports of violence, persecution, or vandalism directed against <strong>Ethiopian Orthodox Church worshippers, priests, and church property</strong>."
-  },
-  am: {
-    title: "በኢትዮጵያ ኦርቶዶክስ ቤተክርስቲያን ላይ የተፈጠረ ጥቃት ያብራሩ",
-    subtitle: "የክስተት ሪፖርት መድረክ",
-    intro:
-      "ይህ ገጽ በኢትዮጵያ ኦርቶዶክስ ቤተክርስቲያን ወዳጆች፣ ካህናት እና የቤተክርስቲያን ንብረት ላይ የሚፈጸሙ ጥቃቶችን ለመሰብሰብ የተሰየመ ነው።"
-  }
-};
+  <main>
+    <!-- Intro paragraph -->
+    <p data-i18n="intro">
+      This site is dedicated to collecting verified reports of violence, persecution, or vandalism directed
+      against <strong>Ethiopian Orthodox Church worshippers, priests, and church property</strong>.
+      Your report will help document and respond to these tragic incidents. Please provide as much detail as possible.
+    </p>
 
-const langSel = document.getElementById("lang");
-const title = document.getElementById("title");
-const subtitle = document.getElementById("subtitle");
-const intro = document.getElementById("intro");
+    <!-- Working form (posts to /api/report) -->
+    <form id="report-form">
+      <label data-i18n="field_date">Date of Incident:
+        <input type="date" name="incident_date" required />
+      </label>
 
-langSel.addEventListener("change", () => {
-  const l = langSel.value;
-  title.textContent = texts[l].title;
-  subtitle.textContent = texts[l].subtitle;
-  intro.innerHTML = texts[l].intro;
-  document.documentElement.lang = l;
-});
-</script>
+      <label data-i18n="field_location">Location (City/Region):
+        <input type="text" name="location" placeholder="e.g. Gondar, Amhara" data-i18n-ph="ph_location" required />
+      </label>
 
+      <label data-i18n="field_reporting_country">Country You Are Reporting From:
+        <input type="text" name="reporting_country" placeholder="e.g. United States, Ethiopia" data-i18n-ph="ph_reporting_country" required />
+      </label>
+
+      <label data-i18n="field_name">Your Full Name:
+        <input type="text" name="reporter_name" placeholder="Optional but helpful" data-i18n-ph="ph_name" required />
+      </label>
+
+      <label data-i18n="field_phone">Phone Number:
+        <input type="tel" name="phone" placeholder="Include country code (e.g. +251...)" data-i18n-ph="ph_phone" required />
+      </label>
+
+      <label data-i18n="field_details">Detailed Account of the Incident:
+        <textarea name="details" rows="6"
+          placeholder="Please describe what happened, when, and who was involved..."
+          data-i18n-ph="ph_details" required></textarea>
+      </label>
+
+      <!-- File upload disabled for MVP; we can wire Supabase Storage next -->
+      <!--
+      <label data-i18n="field_evidence">Upload Photo or Evidence (optional):
+        <input type="file" name="evidence" accept="image/*" />
+      </label>
+      -->
+
+      <button type="submit" data-i18n="submit">Submit Report</button>
+
+      <div id="msg-ok"  class="msg ok"  role="status"></div>
+      <div id="msg-err" class="msg err" role="alert"></div>
+    </form>
+  </main>
+
+  <footer>
+    © 2025 Ethiopian Orthodox Church Incident Reporting | ktinsight.com
+  </footer>
+
+  <script>
+    /* ============================
+       i18n dictionary (EN & AM)
+       ============================ */
+    const I18N = {
+      en: {
+        lang_label: "Language:",
+        title_main: "Report Violence Against the Ethiopian Orthodox Church",
+        subtitle: "Incident Reporting Portal",
+        intro:
+          'This site is dedicated to collecting verified reports of violence, persecution, or vandalism directed against <strong>Ethiopian Orthodox Church worshippers, priests, and church property</strong>. Your report will help document and respond to these tragic incidents. Please provide as much detail as possible.',
+        field_date: "Date of Incident:",
+        field_location: "Location (City/Region):",
+        field_reporting_country: "Country You Are Reporting From:",
+        field_name: "Your Full Name:",
+        field_phone: "Phone Number:",
+        field_details: "Detailed Account of the Incident:",
+        // field_evidence: "Upload Photo or Evidence (optional):",
+        submit: "Submit Report",
+        ph_location: "e.g. Gondar, Amhara",
+        ph_reporting_country: "e.g. United States, Ethiopia",
+        ph_name: "Optional but helpful",
+        ph_phone: "Include country code (e.g. +251...)",
+        ph_details: "Please describe what happened, when, and who was involved...",
+        msg_ok: "Your report has been submitted. Thank you.",
+        msg_err: "Submission failed. Please try again."
+      },
+      am: {
+        lang_label: "ቋንቋ:",
+        title_main: "በኢትዮጵያ ኦርቶዶክስ ቤተክርስቲያን ላይ የተፈጠረ ጥቃት ያብራሩ",
+        subtitle: "የክስተት ሪፖርት መድረክ",
+        intro:
+          'ይህ ገጽ በኢትዮጵያ ኦርቶዶክስ ቤተክርስቲያን ወዳጆች፣ ካህናት እና የቤተክርስቲያን ንብረት ላይ የሚፈጸሙ ጥቃቶች፣ ማስያዝ ወይም ቁስል አድማጮች ላይ የተረጋገጡ ሪፖርቶችን ለመሰብሰብ የተሰየመ ነው። ሪፖርትዎ እነዚህን ተረሳሽ ክስተቶች ለማስታወስ እና ለማስመለስ ይረዳል። እባክዎ በተቻለ መጠን ዝርዝር መረጃ ያቅርቡ።',
+        field_date: "የክስተቱ ቀን:",
+        field_location: "አካባቢ (ከተማ/ክልል):",
+        field_reporting_country: "ከየት አገር እየገለጹ ነው:",
+        field_name: "ሙሉ ስምዎ:",
+        field_phone: "ስልክ ቁጥር:",
+        field_details: "የክስተቱ ዝርዝር መግለጫ:",
+        // field_evidence: "ፎቶ ወይም ማስረጃ ይጫኑ (እንደፈለጉ):",
+        submit: "ሪፖርት አቅርቡ",
+        ph_location: "ለምሳሌ ጎንደር፣ አማራ",
+        ph_reporting_country: "ለምሳሌ አሜሪካ፣ ኢትዮጵያ",
+        ph_name: "በአማራጭ ግን ጠቃሚ",
+        ph_phone: "የአገር ኮድ ያካትቱ (ለምሳሌ +251...)",
+        ph_details: "እባክዎ ምን እንደተከሰተ፣ መቼ እና ማን እንደተሳተፉ ይግለጹ...",
+        msg_ok: "ሪፖርትዎ ተሳክቶ ልከዋል። አመሰግናለሁ።",
+        msg_err: "ልኬት አልተሳካም። እባክዎን ደግመው ይሞክሩ።"
+      }
+    };
+
+    /* Apply translation by data attributes */
+    function applyI18n(lang) {
+      // elements with inner text (or HTML in the intro)
+      document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.getAttribute("data-i18n");
+        const val = I18N[lang][key];
+        if (!val) return;
+        if (key === "intro") el.innerHTML = val; else el.textContent = val;
+      });
+      // placeholders
+      document.querySelectorAll("[data-i18n-ph]").forEach(el => {
+        const key = el.getAttribute("data-i18n-ph");
+        if (I18N[lang][key]) el.placeholder = I18N[lang][key];
+      });
+      // messages (we update their content so they match the chosen language)
+      const okMsg = document.getElementById('msg-ok');
+      const errMsg = document.getElementById('msg-err');
+      if (okMsg) okMsg.textContent = I18N[lang].msg_ok;
+      if (errMsg) errMsg.textContent = I18N[lang].msg_err;
+
+      // document language
+      document.documentElement.lang = lang;
+      try { localStorage.setItem('lang', lang); } catch(e) {}
+    }
+
+    // Init + events
+    const langSelect = document.getElementById("language");
+    langSelect.addEventListener("change", (e) => applyI18n(e.target.value));
+    (function initLang(){
+      let lang = 'en';
+      try { lang = localStorage.getItem('lang') || 'en'; } catch(e) {}
+      langSelect.value = lang;
+      applyI18n(lang);
+    })();
+
+    /* Submit handler (works once your /api/report is live and Vercel env vars are set) */
+    const form = document.getElementById('report-form');
+    const okMsg = document.getElementById('msg-ok');
+    const errMsg = document.getElementById('msg-err');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      okMsg.style.display = 'none';
+      errMsg.style.display = 'none';
+
+      const data = Object.fromEntries(new FormData(form).entries());
+
+      // simple required check (browser enforces too)
+      const required = ['incident_date','location','reporting_country','reporter_name','phone','details'];
+      for (const k of required) {
+        if (!data[k] || String(data[k]).trim() === '') {
+          errMsg.textContent = (document.documentElement.lang === 'am')
+            ? 'እባክዎ አስፈላጊ ሁሉንም መስኮች ይሙሉ።'
+            : 'Please fill out all required fields.';
+          errMsg.style.display = 'block';
+          return;
+        }
+      }
+
+      try {
+        const r = await fetch('/api/report', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        if (!r.ok) {
+          const t = await r.text();
+          throw new Error(t || 'Request failed');
+        }
+
+        okMsg.style.display = 'block';
+        form.reset();
+      } catch (err) {
+        console.error(err);
+        errMsg.textContent = (document.documentElement.lang === 'am')
+          ? 'ልኬት አልተሳካም። እባክዎን ደግመው ይሞክሩ።'
+          : 'Submission failed. Please try again.';
+        errMsg.style.display = 'block';
+      }
+    });
+  </script>
 </body>
 </html>
