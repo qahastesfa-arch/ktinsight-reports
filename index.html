@@ -1,164 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ethiopian Orthodox Church Incident Reporting</title>
-  <style>
-    body {
-      font-family: "Segoe UI", Arial, sans-serif;
-      background-color: #1a1a1a;        /* deep charcoal */
-      color: #f5f5f5;                   /* soft light text */
-      margin: 0;
-      padding: 0;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Language Switch Example</title>
+<style>
+  body {
+    background:#1a1a1a;
+    color:#f5f5f5;
+    font-family:"Segoe UI",Arial,sans-serif;
+  }
+  header {
+    background:#2a0000;
+    color:#f5f5f5;
+    padding:25px 20px 40px;
+    position:relative;
+    text-align:center;
+  }
 
-    header {
-      text-align: center;
-      background: linear-gradient(180deg, #4b0000 0%, #2a0000 100%); /* deep red to black */
-      color: #f5f5f5;
-      padding: 30px 20px;
-      border-bottom: 2px solid #8c1111; /* subtle red edge */
-    }
-.language-switch {
-      position: absolute;
-      top: 15px;
-      right: 20px;
-      background-color: #2b2b2b;
-      border: 1px solid #555;
-      border-radius: 5px;
-      padding: 5px 10px;
-      font-size: 0.9em;
-    }
-    .language-switch label { margin-right: 6px; color: #f5f5f5; }
-    .language-switch select {
-      background: #2b2b2b;
-      color: #f5f5f5;
-      border: none;
-      font-size: 0.9em;
-    }
-    img.logo {
-      max-width: 240px;
-      height: auto;
-      margin-bottom: 15px;
-      filter: grayscale(20%) contrast(120%);
-    }
+  /* your style */
+  .language-switch {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background-color: #2b2b2b;
+    border: 1px solid #555;
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-size: 0.9em;
+  }
+  .language-switch label { margin-right: 6px; color: #f5f5f5; }
+  .language-switch select {
+    background: #2b2b2b;
+    color: #f5f5f5;
+    border: none;
+    font-size: 0.9em;
+  }
 
-    main {
-      max-width: 600px;
-      margin: 40px auto;
-      background-color: #2b2b2b;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
-    }
-
-    h1, h2 {
-      text-align: center;
-      color: #f0d68a; /* muted gold accent */
-    }
-
-    p {
-      line-height: 1.6;
-      color: #e0e0e0;
-    }
-
-    form label {
-      display: block;
-      margin-top: 15px;
-      font-weight: bold;
-      color: #f0d68a;
-    }
-
-    input, textarea, select {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border-radius: 5px;
-      border: 1px solid #555;
-      background-color: #1e1e1e;
-      color: #f5f5f5;
-      font-size: 1em;
-    }
-
-    input:focus, textarea:focus {
-      outline: 2px solid #8c1111;
-      background-color: #262626;
-    }
-
-    button {
-      background-color: #8c1111; /* dark red */
-      color: #fff;
-      border: none;
-      padding: 12px 20px;
-      font-size: 1em;
-      border-radius: 5px;
-      margin-top: 25px;
-      cursor: pointer;
-      width: 100%;
-    }
-
-    button:hover {
-      background-color: #b11b1b;
-    }
-
-    footer {
-      text-align: center;
-      margin: 50px 0 20px;
-      font-size: 0.9em;
-      color: #999;
-    }
-  </style>
+  main { max-width:600px; margin:30px auto; }
+</style>
 </head>
 <body>
-  <header>
-    <img src="https://raw.githubusercontent.com/qahastesfa-arch/ktinsight-reports/main/EOTC.png" alt="Ethiopian Orthodox Church Logo" class="logo">
-    <h1>Report Violence Against the Ethiopian Orthodox Church</h1>
-  </header>
 
-  <main>
-    <h2>Incident Reporting Portal</h2>
-    <p>
-      This site is dedicated to collecting verified reports of violence, persecution, or vandalism directed
-      against <strong>Ethiopian Orthodox Church worshippers, priests, and church property</strong>.
-      Your report will help document and respond to these tragic incidents. Please provide as much detail as possible.
-    </p>
+<header>
+  <div class="language-switch">
+    <label for="lang">Language:</label>
+    <select id="lang">
+      <option value="en" selected>English</option>
+      <option value="am">አማርኛ (Amharic)</option>
+    </select>
+  </div>
 
-    <form>
-      <label>Date of Incident:
-        <input type="date" name="incident_date" required>
-      </label>
+  <h1 id="title">Report Violence Against the Ethiopian Orthodox Church</h1>
+  <h2 id="subtitle">Incident Reporting Portal</h2>
+</header>
 
-      <label>Location (City/Region):
-        <input type="text" name="location" placeholder="e.g. Gondar, Amhara" required>
-      </label>
+<main>
+  <p id="intro">
+    This site is dedicated to collecting verified reports of violence, persecution, or vandalism directed
+    against <strong>Ethiopian Orthodox Church worshippers, priests, and church property</strong>.
+  </p>
+</main>
 
-      <label>Country You Are Reporting From:
-        <input type="text" name="reporting_country" placeholder="e.g. United States, Ethiopia" required>
-      </label>
+<script>
+const texts = {
+  en: {
+    title: "Report Violence Against the Ethiopian Orthodox Church",
+    subtitle: "Incident Reporting Portal",
+    intro:
+      "This site is dedicated to collecting verified reports of violence, persecution, or vandalism directed against <strong>Ethiopian Orthodox Church worshippers, priests, and church property</strong>."
+  },
+  am: {
+    title: "በኢትዮጵያ ኦርቶዶክስ ቤተክርስቲያን ላይ የተፈጠረ ጥቃት ያብራሩ",
+    subtitle: "የክስተት ሪፖርት መድረክ",
+    intro:
+      "ይህ ገጽ በኢትዮጵያ ኦርቶዶክስ ቤተክርስቲያን ወዳጆች፣ ካህናት እና የቤተክርስቲያን ንብረት ላይ የሚፈጸሙ ጥቃቶችን ለመሰብሰብ የተሰየመ ነው።"
+  }
+};
 
-      <label>Your Full Name:
-        <input type="text" name="reporter_name" placeholder="Optional but helpful" required>
-      </label>
+const langSel = document.getElementById("lang");
+const title = document.getElementById("title");
+const subtitle = document.getElementById("subtitle");
+const intro = document.getElementById("intro");
 
-      <label>Phone Number:
-        <input type="tel" name="phone" placeholder="Include country code (e.g. +251...)" required>
-      </label>
+langSel.addEventListener("change", () => {
+  const l = langSel.value;
+  title.textContent = texts[l].title;
+  subtitle.textContent = texts[l].subtitle;
+  intro.innerHTML = texts[l].intro;
+  document.documentElement.lang = l;
+});
+</script>
 
-      <label>Detailed Account of the Incident:
-        <textarea name="details" rows="6" placeholder="Please describe what happened, when, and who was involved..." required></textarea>
-      </label>
-
-      <label>Upload Photo or Evidence (optional):
-        <input type="file" name="evidence" accept="image/*">
-      </label>
-
-      <button type="submit">Submit Report</button>
-    </form>
-  </main>
-
-  <footer>
-    © 2025 Ethiopian Orthodox Church Incident Reporting | ktinsight.com
-  </footer>
 </body>
 </html>
