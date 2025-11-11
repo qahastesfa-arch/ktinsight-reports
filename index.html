@@ -19,7 +19,7 @@
       padding: 20px;
     }
     img.logo {
-      max-width: 120px;
+      max-width: 240px; /* doubled from 120px */
       height: auto;
       margin-bottom: 10px;
     }
@@ -70,7 +70,7 @@
 </head>
 <body>
   <header>
-    <!-- Updated logo path -->
+    <!-- Updated logo path and size -->
     <img src="https://raw.githubusercontent.com/qahastesfa-arch/ktinsight-reports/main/EOTC.png" alt="Ethiopian Orthodox Church Logo" class="logo">
     <h1>Incident Reporting Portal</h1>
   </header>
@@ -97,27 +97,4 @@
       </label>
 
       <label>Your Full Name:
-        <input type="text" name="reporter_name" placeholder="Optional but helpful" required>
-      </label>
-
-      <label>Phone Number:
-        <input type="tel" name="phone" placeholder="Include country code (e.g. +251...)" required>
-      </label>
-
-      <label>Detailed Account of the Incident:
-        <textarea name="details" rows="6" placeholder="Please describe what happened, when, and who was involved..." required></textarea>
-      </label>
-
-      <label>Upload Photo or Evidence (optional):
-        <input type="file" name="evidence" accept="image/*">
-      </label>
-
-      <button type="submit">Submit Report</button>
-    </form>
-  </main>
-
-  <footer>
-    © 2025 Ethiopian Orthodox Church Incident Reporting | ktinsight.com
-  </footer>
-</body>
-</html>
+        <i
