@@ -5,101 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Report Violence Against the Ethiopian Orthodox Church</title>
   <style>
-    body {
-      font-family: "Segoe UI", Arial, sans-serif;
-      background-color: #1a1a1a;        /* deep charcoal */
-      color: #f5f5f5;                   /* soft light text */
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      text-align: center;
-      background: linear-gradient(180deg, #4b0000 0%, #2a0000 100%);
-      color: #f5f5f5;
-      padding: 25px 20px 40px;
-      border-bottom: 2px solid #8c1111;
-      position: relative;
-    }
-    .language-switch {
-      position: absolute;
-      top: 15px;
-      right: 20px;
-      background-color: #2b2b2b;
-      border: 1px solid #555;
-      border-radius: 5px;
-      padding: 5px 10px;
-      font-size: 0.9em;
-    }
-    .language-switch label { margin-right: 6px; color: #f5f5f5; }
-    .language-switch select {
-      background: #2b2b2b;
-      color: #f5f5f5;
-      border: none;
-      font-size: 0.9em;
-    }
-    img.logo {
-      max-width: 240px;  /* larger logo */
-      height: auto;
-      margin-bottom: 15px;
-      filter: grayscale(20%) contrast(120%);
-    }
-    main {
-      max-width: 600px;
-      margin: 40px auto;
-      background-color: #2b2b2b;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
-    }
-    h1 { color: #f0d68a; margin-bottom: 0; }
-    h2 { color: #ddd; margin: 10px 0 12px; font-weight: normal; }
-    p  { line-height: 1.6; color: #e0e0e0; }
-    form label {
-      display: block;
-      margin-top: 15px;
-      font-weight: bold;
-      color: #f0d68a;
-    }
-    input, textarea, select, button {
-      font-family: inherit;
-    }
-    input, textarea, select {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border-radius: 5px;
-      border: 1px solid #555;
-      background-color: #1e1e1e;
-      color: #f5f5f5;
-      font-size: 1em;
-    }
-    input:focus, textarea:focus {
-      outline: 2px solid #8c1111;
-      background-color: #262626;
-    }
-    button {
-      background-color: #8c1111;
-      color: #fff;
-      border: none;
-      padding: 12px 20px;
-      font-size: 1em;
-      border-radius: 5px;
-      margin-top: 25px;
-      cursor: pointer;
-      width: 100%;
-    }
-    button:hover { background-color: #b11b1b; }
-    footer {
-      text-align: center;
-      margin: 50px 0 20px;
-      font-size: 0.9em;
-      color: #999;
-    }
+    body { font-family: "Segoe UI", Arial, sans-serif; background:#1a1a1a; color:#f5f5f5; margin:0; }
+    header { text-align:center; background:linear-gradient(180deg,#4b0000 0%,#2a0000 100%); color:#f5f5f5; padding:25px 20px 40px; border-bottom:2px solid #8c1111; position:relative; }
+    .language-switch { position:absolute; top:15px; right:20px; background:#2b2b2b; border:1px solid #555; border-radius:5px; padding:5px 10px; font-size:.9em; }
+    .language-switch select { background:#2b2b2b; color:#f5f5f5; border:none; font-size:.9em; }
+    img.logo { max-width:240px; height:auto; margin-bottom:15px; filter:grayscale(20%) contrast(120%); }
+    main { max-width:600px; margin:40px auto; background:#2b2b2b; padding:30px; border-radius:10px; box-shadow:0 0 20px rgba(0,0,0,.5); }
+    h1 { color:#f0d68a; margin-bottom:0; }
+    h2 { color:#ddd; margin:10px 0 12px; font-weight:normal; }
+    p { line-height:1.6; color:#e0e0e0; }
+    form label { display:block; margin-top:15px; font-weight:bold; color:#f0d68a; }
+    input, textarea, select, button { font-family:inherit; }
+    input, textarea, select { width:100%; padding:10px; margin-top:5px; border-radius:5px; border:1px solid #555; background:#1e1e1e; color:#f5f5f5; font-size:1em; }
+    input:focus, textarea:focus { outline:2px solid #8c1111; background:#262626; }
+    button { background:#8c1111; color:#fff; border:none; padding:12px 20px; font-size:1em; border-radius:5px; margin-top:25px; cursor:pointer; width:100%; }
+    button:hover { background:#b11b1b; }
+    .msg { margin-top:15px; padding:10px; border-radius:6px; display:none; }
+    .msg.ok { background:#103c10; color:#bdf3bd; }
+    .msg.err { background:#3c1010; color:#f3bdbd; }
+    footer { text-align:center; margin:50px 0 20px; font-size:.9em; color:#999; }
   </style>
 </head>
 <body>
   <header>
-    <!-- Language preference -->
     <div class="language-switch">
       <label for="language" data-i18n="lang_label">Language:</label>
       <select name="language" id="language" aria-label="Language">
@@ -108,26 +36,20 @@
       </select>
     </div>
 
-    <!-- Logo and main title -->
-    <img src="https://raw.githubusercontent.com/qahastesfa-arch/ktinsight-reports/main/EOTC.png"
-         alt="Ethiopian Orthodox Church Logo" class="logo"/>
+    <img src="https://raw.githubusercontent.com/qahastesfa-arch/ktinsight-reports/main/EOTC.png" alt="Ethiopian Orthodox Church Logo" class="logo"/>
 
-    <!-- Main title -->
     <h1 data-i18n="title_main">Report Violence Against the Ethiopian Orthodox Church</h1>
-
-    <!-- Subheading (you asked for this above the paragraph) -->
     <h2 data-i18n="subtitle">Incident Reporting Portal</h2>
   </header>
 
   <main>
-    <!-- Descriptive paragraph -->
     <p data-i18n="intro">
       This site is dedicated to collecting verified reports of violence, persecution, or vandalism directed
       against <strong>Ethiopian Orthodox Church worshippers, priests, and church property</strong>.
       Your report will help document and respond to these tragic incidents. Please provide as much detail as possible.
     </p>
 
-    <form>
+    <form id="report-form">
       <label data-i18n="field_date">Date of Incident:
         <input type="date" name="incident_date" required />
       </label>
@@ -153,11 +75,15 @@
                   data-i18n-ph="ph_details" required></textarea>
       </label>
 
-      <label data-i18n="field_evidence">Upload Photo or Evidence (optional):
+      <!-- Evidence upload disabled in MVP; storing files securely comes next -->
+      <!-- <label data-i18n="field_evidence">Upload Photo or Evidence (optional):
         <input type="file" name="evidence" accept="image/*" />
-      </label>
+      </label> -->
 
       <button type="submit" data-i18n="submit">Submit Report</button>
+
+      <div id="msg-ok" class="msg ok">Your report has been submitted. Thank you.</div>
+      <div id="msg-err" class="msg err">Submission failed. Please try again.</div>
     </form>
   </main>
 
@@ -166,7 +92,7 @@
   </footer>
 
   <script>
-    // Simple i18n dictionary
+    // i18n dictionary
     const I18N = {
       en: {
         lang_label: "Language:",
@@ -180,9 +106,8 @@
         field_name: "Your Full Name:",
         field_phone: "Phone Number:",
         field_details: "Detailed Account of the Incident:",
-        field_evidence: "Upload Photo or Evidence (optional):",
+        // field_evidence: "Upload Photo or Evidence (optional):",
         submit: "Submit Report",
-        // placeholders
         ph_location: "e.g. Gondar, Amhara",
         ph_reporting_country: "e.g. United States, Ethiopia",
         ph_name: "Optional but helpful",
@@ -201,9 +126,8 @@
         field_name: "ሙሉ ስምዎ:",
         field_phone: "ስልክ ቁጥር:",
         field_details: "የክስተቱ ዝርዝር መግለጫ:",
-        field_evidence: "ፎቶ ወይም ማስረጃ ይጫኑ (እንደፈለጉ):",
+        // field_evidence: "ፎቶ ወይም ማስረጃ ይጫኑ (እንደፈለጉ):",
         submit: "ሪፖርት አቅርቡ",
-        // placeholders
         ph_location: "ለምሳሌ ጎንደር፣ አማራ",
         ph_reporting_country: "ለምሳሌ አሜሪካ፣ ኢትዮጵያ",
         ph_name: "በአማራጭ ግን ጠቃሚ",
@@ -213,31 +137,74 @@
     };
 
     function applyI18n(lang) {
-      // Text nodes
       document.querySelectorAll("[data-i18n]").forEach(el => {
         const key = el.getAttribute("data-i18n");
         if (!I18N[lang][key]) return;
-        // Some fields (like intro) have HTML markup
-        if (key === "intro") {
-          el.innerHTML = I18N[lang][key];
-        } else {
-          el.textContent = I18N[lang][key];
-        }
+        if (key === "intro") el.innerHTML = I18N[lang][key];
+        else el.textContent = I18N[lang][key];
       });
-      // Placeholders
       document.querySelectorAll("[data-i18n-ph]").forEach(el => {
         const key = el.getAttribute("data-i18n-ph");
         if (I18N[lang][key]) el.placeholder = I18N[lang][key];
       });
-      // Update page lang attribute
-      document.documentElement.lang = lang === "am" ? "am" : "en";
+      document.documentElement.lang = lang;
+      // update button text (already handled via data-i18n)
     }
 
-    // Init + events
     const langSelect = document.getElementById("language");
     langSelect.addEventListener("change", (e) => applyI18n(e.target.value));
-    // Apply initial language (English default)
     applyI18n(langSelect.value);
+
+    // Submit handler
+    const form = document.getElementById('report-form');
+    const okMsg = document.getElementById('msg-ok');
+    const errMsg = document.getElementById('msg-err');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      okMsg.style.display = 'none';
+      errMsg.style.display = 'none';
+
+      const formData = new FormData(form);
+      // Build JSON payload (files are skipped in MVP)
+      const payload = {
+        incident_date: formData.get('incident_date'),
+        location: formData.get('location'),
+        reporting_country: formData.get('reporting_country'),
+        reporter_name: formData.get('reporter_name'),
+        phone: formData.get('phone'),
+        details: formData.get('details')
+      };
+
+      // Simple required check (browser also enforces)
+      for (const k of Object.keys(payload)) {
+        if (!payload[k]) {
+          errMsg.textContent = 'Please fill out all required fields.';
+          errMsg.style.display = 'block';
+          return;
+        }
+      }
+
+      try {
+        const r = await fetch('/api/report', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!r.ok) {
+          const t = await r.text();
+          throw new Error(t || 'Request failed');
+        }
+
+        okMsg.style.display = 'block';
+        form.reset();
+      } catch (err) {
+        console.error(err);
+        errMsg.textContent = 'Submission failed. Please try again.';
+        errMsg.style.display = 'block';
+      }
+    });
   </script>
 </body>
 </html>
