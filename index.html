@@ -1,294 +1,295 @@
 <!DOCTYPE html>
 <html lang="en">
-  
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Report Violence Against the Ethiopian Orthodox Church</title>
-  <style>
-    /* Base theme (somber) */
-    body { font-family: "Segoe UI", Arial, sans-serif; background:#1a1a1a; color:#f5f5f5; margin:0; }
-    header {
-      text-align:center;
-      background: linear-gradient(180deg, #4b0000 0%, #2a0000 100%);
-      color:#f5f5f5;
-      padding:25px 20px 40px;
-      border-bottom:2px solid #8c1111;
-      position:relative;  /* for absolute child */
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ethiopian Orthodox Church Incident Reporting</title>
+
+  <!-- Ethiopic-friendly font -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wght@400;600&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+    :root{
+      --bg:#1a1a1a; --panel:#2b2b2b; --text:#f5f5f5; --muted:#e0e0e0;
+      --gold:#f0d68a; --red:#8c1111; --red-2:#b11b1b; --stroke:#555;
     }
-    img.logo { max-width:240px; height:auto; margin-bottom:15px; filter:grayscale(20%) contrast(120%); }
+body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background-color: #1a1a1a;        /* deep charcoal */
+      color: #f5f5f5;                   /* soft light text */
+      font-family: Inter, "Noto Sans Ethiopic", Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+margin: 0;
+      padding: 0;
+}
 
-    main { max-width:600px; margin:40px auto; background:#2b2b2b; padding:30px;
-           border-radius:10px; box-shadow:0 0 20px rgba(0,0,0,.5); }
-
-    h1 { color:#f0d68a; margin: 0 0 4px; }
-    h2 { color:#ddd; margin:10px 0 12px; font-weight:normal; }
-    p  { line-height:1.6; color:#e0e0e0; }
-
-    /* Form */
-    form label { display:block; margin-top:15px; font-weight:bold; color:#f0d68a; }
-    input, textarea, select, button { font-family:inherit; }
-    input, textarea, select {
-      width:100%; padding:10px; margin-top:5px; border-radius:5px;
-      border:1px solid #555; background:#1e1e1e; color:#f5f5f5; font-size:1em;
-    }
-    input:focus, textarea:focus { outline:2px solid #8c1111; background:#262626; }
-    button {
-      background:#8c1111; color:#fff; border:none; padding:12px 20px; font-size:1em;
-      border-radius:5px; margin-top:25px; cursor:pointer; width:100%;
-    }
-    button:hover { background:#b11b1b; }
-
-    .msg { margin-top:15px; padding:10px; border-radius:6px; display:none; }
-    .msg.ok  { background:#103c10; color:#bdf3bd; }
-    .msg.err { background:#3c1010; color:#f3bdbd; }
-
-    footer { text-align:center; margin:50px 0 20px; font-size:.9em; color:#999; }
-
-    /* Language switcher (clearly visible, responsive) */
-    .language-switch {
-      position: absolute;
-      top: 15px;
-      right: 20px;
-      background-color: #2b2b2b;
-      border: 1px solid #888;
-      border-radius: 6px;
-      padding: 6px 12px;
-      font-size: 0.9em;
-      box-shadow: 0 2px 6px rgba(0,0,0,.35);
-      z-index: 1000;
-    }
-    .language-switch label { margin-right: 8px; color: #f5f5f5; }
-    .language-switch select {
-      background: #2b2b2b;
+header {
+text-align: center;
+      background: linear-gradient(180deg, #4b0000 0%, #2a0000 100%); /* deep red to black */
       color: #f5f5f5;
-      border: 1px solid #666;
-      border-radius: 4px;
-      font-size: 0.95em;
-      padding: 2px 6px;
+      padding: 30px 20px;
+      border-bottom: 2px solid #8c1111; /* subtle red edge */
+      background: linear-gradient(180deg, #4b0000 0%, #2a0000 100%);
+      color: var(--text);
+      padding: 24px 16px;
+      border-bottom: 2px solid var(--red);
+      position: sticky; top: 0; z-index: 5;
+}
+
+    img.logo {
+      max-width: 240px;
+      height: auto;
+      margin-bottom: 15px;
+      filter: grayscale(20%) contrast(120%);
+    .topbar {
+      display: flex; gap: 12px; align-items: center; justify-content: center; margin-bottom: 8px;
+}
+
+    main {
+      max-width: 600px;
+      margin: 40px auto;
+      background-color: #2b2b2b;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
     }
-    @media (max-width: 640px) {
-      .language-switch {
-        position: static;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        margin: 10px auto 0;
-      }
-      header { padding-top: 10px; }
+
+    h1, h2 {
+      text-align: center;
+      color: #f0d68a; /* muted gold accent */
+    .lang-select {
+      background: #220000; color: #fff; border: 1px solid #4a0d0d;
+      border-radius: 6px; padding: 6px 10px; font-size: 0.95rem;
+}
+
+    p {
+      line-height: 1.6;
+      color: #e0e0e0;
+    img.logo {
+      max-width: 240px; height: auto; margin: 6px 0 10px; filter: grayscale(20%) contrast(120%);
+}
+
+    form label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      color: #f0d68a;
+    h1, h2 { text-align: center; color: var(--gold); margin: 6px 0 0; }
+    main {
+      max-width: 680px; margin: 40px auto; background: var(--panel); padding: 28px;
+      border-radius: 12px; box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+    p { line-height: 1.6; color: var(--muted); }
+    form label { display:block; margin-top:15px; font-weight: 600; color: var(--gold); }
+input, textarea, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #555;
+      background-color: #1e1e1e;
+      color: #f5f5f5;
+      font-size: 1em;
     }
-  </style>
+
+    input:focus, textarea:focus {
+      outline: 2px solid #8c1111;
+      background-color: #262626;
+      width:100%; padding:10px; margin-top:6px; border-radius:6px; border:1px solid var(--stroke);
+      background:#1e1e1e; color:var(--text); font-size:1rem;
+}
+
+    input:focus, textarea:focus { outline:2px solid var(--red); background:#262626; }
+button {
+      background-color: #8c1111; /* dark red */
+      color: #fff;
+      border: none;
+      padding: 12px 20px;
+      font-size: 1em;
+      border-radius: 5px;
+      margin-top: 25px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    button:hover {
+      background-color: #b11b1b;
+    }
+
+    footer {
+      text-align: center;
+      margin: 50px 0 20px;
+      font-size: 0.9em;
+      color: #999;
+      background: var(--red); color:#fff; border:none; padding:12px 20px; font-size:1rem;
+      border-radius:8px; margin-top:22px; cursor:pointer; width:100%;
+}
+    button:hover { background: var(--red-2); }
+    .helper { font-size: 0.9rem; color:#bbb; margin-top: 8px; }
+    footer { text-align:center; margin:50px 0 20px; font-size:0.9rem; color:#999; }
+</style>
 </head>
 <body>
-  <header>
-    <!-- Language preference -->
-    <div class="language-switch">
-      <label for="language" data-i18n="lang_label">Language:</label>
-      <select name="language" id="language" aria-label="Language">
-        <option value="en" selected>English</option>
-        <option value="am">አማርኛ (Amharic)</option>
+<header>
+    <img src="https://raw.githubusercontent.com/qahastesfa-arch/ktinsight-reports/main/EOTC.png" alt="Ethiopian Orthodox Church Logo" class="logo">
+    <h1>Incident Reporting Portal</h1>
+    <div class="topbar">
+      <label for="lang" style="font-weight:600;">🌐</label>
+      <select id="lang" class="lang-select" aria-label="Language">
+        <option value="en">English</option>
+        <option value="am">አማርኛ</option>
       </select>
     </div>
 
-    <!-- Logo -->
-    <img
-      src="https://raw.githubusercontent.com/qahastesfa-arch/ktinsight-reports/main/EOTC.png"
-      alt="Ethiopian Orthodox Church Logo"
-      class="logo"
-    />
+    <img src="https://raw.githubusercontent.com/qahastesfa-arch/ktinsight-reports/main/EOTC.png"
+         alt="Ethiopian Orthodox Church Logo" class="logo">
+    <h1 data-i18n="title">Incident Reporting Portal</h1>
+</header>
 
-    <!-- Main title (top) -->
-    <h1 data-i18n="title_main">Report Violence Against the Ethiopian Orthodox Church</h1>
-
-    <!-- Subheading (immediately under the title) -->
-    <h2 data-i18n="subtitle">Incident Reporting Portal</h2>
-  </header>
-
-  <main>
-    <!-- Intro paragraph -->
-    <p data-i18n="intro">
+<main>
+    <h2>Report Violence Against the Ethiopian Orthodox Church</h2>
+    <p>
       This site is dedicated to collecting verified reports of violence, persecution, or vandalism directed
       against <strong>Ethiopian Orthodox Church worshippers, priests, and church property</strong>.
       Your report will help document and respond to these tragic incidents. Please provide as much detail as possible.
-    </p>
+    <h2 data-i18n="subtitle">Report Violence Against the Ethiopian Orthodox Church</h2>
+    <p data-i18n="intro">
+      This site collects reports of violence, persecution, or vandalism directed against Ethiopian Orthodox
+      Church worshippers, priests, and church property. Please provide as much detail as possible.
+</p>
 
-    <!-- Working form (posts to /api/report) -->
-    <form id="report-form">
-      <label data-i18n="field_date">Date of Incident:
-        <input type="date" name="incident_date" required />
-      </label>
+    <form>
+      <label>Date of Incident:
+    <form method="post" action="#">
+      <label><span data-i18n="date_label">Date of Incident</span>:
+<input type="date" name="incident_date" required>
+</label>
 
-      <label data-i18n="field_location">Location (City/Region):
-        <input type="text" name="location" placeholder="e.g. Gondar, Amhara" data-i18n-ph="ph_location" required />
-      </label>
+      <label>Location (City/Region):
+        <input type="text" name="location" placeholder="e.g. Gondar, Amhara" required>
+      <label><span data-i18n="location_label">Location (City/Region)</span>:
+        <input type="text" name="location" placeholder="e.g. Gondar, Amhara" required data-ph="location_ph">
+</label>
 
-      <label data-i18n="field_reporting_country">Country You Are Reporting From:
-        <input type="text" name="reporting_country" placeholder="e.g. United States, Ethiopia" data-i18n-ph="ph_reporting_country" required />
-      </label>
+      <label>Country You Are Reporting From:
+        <input type="text" name="reporting_country" placeholder="e.g. United States, Ethiopia" required>
+      <label><span data-i18n="reporting_country_label">Country You Are Reporting From</span>:
+        <input type="text" name="reporting_country" placeholder="e.g. United States, Ethiopia" required data-ph="country_ph">
+</label>
 
-      <label data-i18n="field_name">Your Full Name:
-        <input type="text" name="reporter_name" placeholder="Optional but helpful" data-i18n-ph="ph_name" required />
-      </label>
+      <label>Your Full Name:
+        <input type="text" name="reporter_name" placeholder="Optional but helpful" required>
+      <label><span data-i18n="name_label">Your Full Name</span>:
+        <input type="text" name="reporter_name" placeholder="Full name" required data-ph="name_ph">
+</label>
 
-      <label data-i18n="field_phone">Phone Number:
-        <input type="tel" name="phone" placeholder="Include country code (e.g. +251...)" data-i18n-ph="ph_phone" required />
-      </label>
+      <label>Phone Number:
+        <input type="tel" name="phone" placeholder="Include country code (e.g. +251...)" required>
+      <label><span data-i18n="phone_label">Phone Number</span>:
+        <input type="tel" name="phone" placeholder="Include country code (e.g. +251...)" required data-ph="phone_ph">
+</label>
 
-      <label data-i18n="field_details">Detailed Account of the Incident:
-        <textarea name="details" rows="6"
-          placeholder="Please describe what happened, when, and who was involved..."
-          data-i18n-ph="ph_details" required></textarea>
-      </label>
+      <label>Detailed Account of the Incident:
+        <textarea name="details" rows="6" placeholder="Please describe what happened, when, and who was involved..." required></textarea>
+      <label><span data-i18n="details_label">Detailed Account of the Incident</span>:
+        <textarea name="details" rows="6" placeholder="Describe what happened, when, where, and who was involved…" required data-ph="details_ph"></textarea>
+</label>
 
-      <!-- File upload disabled for MVP; we can wire Supabase Storage next -->
-      <!--
-      <label data-i18n="field_evidence">Upload Photo or Evidence (optional):
-        <input type="file" name="evidence" accept="image/*" />
-      </label>
-      -->
+      <label>Upload Photo or Evidence (optional):
+      <label><span data-i18n="evidence_label">Upload Photo or Evidence (optional)</span>:
+<input type="file" name="evidence" accept="image/*">
+</label>
 
-      <button type="submit" data-i18n="submit">Submit Report</button>
+      <button type="submit">Submit Report</button>
+      <div class="helper" data-i18n="privacy_note">
+        Please avoid sharing sensitive IDs. Only include personally identifying details if necessary for verification.
+      </div>
 
-      <div id="msg-ok"  class="msg ok"  role="status"></div>
-      <div id="msg-err" class="msg err" role="alert"></div>
-    </form>
-  </main>
+      <button type="submit" data-i18n="submit_btn">Submit Report</button>
+</form>
+</main>
 
-  <footer>
+<footer>
     © 2025 Ethiopian Orthodox Church Incident Reporting | ktinsight.com
-  </footer>
+    © 2025 <span data-i18n="footer_org">Ethiopian Orthodox Church Incident Reporting</span> | ktinsight.com
+</footer>
 
   <script>
-    /* ============================
-       i18n dictionary (EN & AM)
-       ============================ */
-    const I18N = {
+    // Simple i18n dictionary
+    const t = {
       en: {
-        lang_label: "Language:",
-        title_main: "Report Violence Against the Ethiopian Orthodox Church",
-        subtitle: "Incident Reporting Portal",
-        intro:
-          'This site is dedicated to collecting verified reports of violence, persecution, or vandalism directed against <strong>Ethiopian Orthodox Church worshippers, priests, and church property</strong>. Your report will help document and respond to these tragic incidents. Please provide as much detail as possible.',
-        field_date: "Date of Incident:",
-        field_location: "Location (City/Region):",
-        field_reporting_country: "Country You Are Reporting From:",
-        field_name: "Your Full Name:",
-        field_phone: "Phone Number:",
-        field_details: "Detailed Account of the Incident:",
-        // field_evidence: "Upload Photo or Evidence (optional):",
-        submit: "Submit Report",
-        ph_location: "e.g. Gondar, Amhara",
-        ph_reporting_country: "e.g. United States, Ethiopia",
-        ph_name: "Optional but helpful",
-        ph_phone: "Include country code (e.g. +251...)",
-        ph_details: "Please describe what happened, when, and who was involved...",
-        msg_ok: "Your report has been submitted. Thank you.",
-        msg_err: "Submission failed. Please try again."
+        title: "Incident Reporting Portal",
+        subtitle: "Report Violence Against the Ethiopian Orthodox Church",
+        intro: "This site collects reports of violence, persecution, or vandalism directed against Ethiopian Orthodox Church worshippers, priests, and church property. Please provide as much detail as possible.",
+        date_label: "Date of Incident",
+        location_label: "Location (City/Region)",
+        reporting_country_label: "Country You Are Reporting From",
+        name_label: "Your Full Name",
+        phone_label: "Phone Number",
+        details_label: "Detailed Account of the Incident",
+        evidence_label: "Upload Photo or Evidence (optional)",
+        privacy_note: "Please avoid sharing sensitive IDs. Only include personally identifying details if necessary for verification.",
+        submit_btn: "Submit Report",
+        footer_org: "Ethiopian Orthodox Church Incident Reporting",
+        // placeholders
+        location_ph: "e.g. Gondar, Amhara",
+        country_ph: "e.g. United States, Ethiopia",
+        name_ph: "Full name",
+        phone_ph: "Include country code (e.g. +251...)",
+        details_ph: "Describe what happened, when, where, and who was involved…"
       },
       am: {
-        lang_label: "ቋንቋ:",
-        title_main: "በኢትዮጵያ ኦርቶዶክስ ቤተክርስቲያን ላይ የተፈጠረ ጥቃት ያብራሩ",
-        subtitle: "የክስተት ሪፖርት መድረክ",
-        intro:
-          'ይህ ገጽ በኢትዮጵያ ኦርቶዶክስ ቤተክርስቲያን ወዳጆች፣ ካህናት እና የቤተክርስቲያን ንብረት ላይ የሚፈጸሙ ጥቃቶች፣ ማስያዝ ወይም ቁስል አድማጮች ላይ የተረጋገጡ ሪፖርቶችን ለመሰብሰብ የተሰየመ ነው። ሪፖርትዎ እነዚህን ተረሳሽ ክስተቶች ለማስታወስ እና ለማስመለስ ይረዳል። እባክዎ በተቻለ መጠን ዝርዝር መረጃ ያቅርቡ።',
-        field_date: "የክስተቱ ቀን:",
-        field_location: "አካባቢ (ከተማ/ክልል):",
-        field_reporting_country: "ከየት አገር እየገለጹ ነው:",
-        field_name: "ሙሉ ስምዎ:",
-        field_phone: "ስልክ ቁጥር:",
-        field_details: "የክስተቱ ዝርዝር መግለጫ:",
-        // field_evidence: "ፎቶ ወይም ማስረጃ ይጫኑ (እንደፈለጉ):",
-        submit: "ሪፖርት አቅርቡ",
-        ph_location: "ለምሳሌ ጎንደር፣ አማራ",
-        ph_reporting_country: "ለምሳሌ አሜሪካ፣ ኢትዮጵያ",
-        ph_name: "በአማራጭ ግን ጠቃሚ",
-        ph_phone: "የአገር ኮድ ያካትቱ (ለምሳሌ +251...)",
-        ph_details: "እባክዎ ምን እንደተከሰተ፣ መቼ እና ማን እንደተሳተፉ ይግለጹ...",
-        msg_ok: "ሪፖርትዎ ተሳክቶ ልከዋል። አመሰግናለሁ።",
-        msg_err: "ልኬት አልተሳካም። እባክዎን ደግመው ይሞክሩ።"
+        title: "የክስተት ሪፖርት መድረክ",
+        subtitle: "በኢትዮጵያ ኦርቶዶክስ ተዋህዶ ቤተክርስቲያን ላይ የተፈጠረ ጥቃት ሪፖርት ያቀርቡ",
+        intro: "ይህ ገጽ በኢትዮጵያ ኦርቶዶክስ ቤተክርስቲያን ወይም በአመንታዊዎች፣ በካህናት እና በቤተክርስቲያን ንብረት ላይ የሚፈጠሩ ጥቃቶች፣ ስደት ወይም ፍርስራሾችን ለማስቀመጥ ይጠቅማል። እባክዎ እውነተኛ ዝርዝር መረጃ ይስጡ።",
+        date_label: "የክስተቱ ቀን",
+        location_label: "ቦታ (ከተማ/ክልል)",
+        reporting_country_label: "ከየት አገር እየገለፁ ነው?",
+        name_label: "ሙሉ ስምዎ",
+        phone_label: "ስልክ ቁጥር",
+        details_label: "የክስተቱ ዝርዝር መግለጫ",
+        evidence_label: "ፎቶ ወይም ማስረጃ ማስገቢያ (አማራጭ)",
+        privacy_note: "እባኮትን በጣም ግል መረጃዎችን አትጨምሩ። ማረጋገጫ ከሚፈልግ ብቻ እንጂ ስለ ግለሰብ መረጃ አትስጡ።",
+        submit_btn: "ሪፖርት ያስገቡ",
+        footer_org: "የኢ.ኦ.ተ. የክስተት ሪፖርት መድረክ",
+        // placeholders
+        location_ph: "ለምሳሌ፡ ጎንደር፣ አማራ",
+        country_ph: "ለምሳሌ፡ ኢትዮጵያ፣ አሜሪካ",
+        name_ph: "ሙሉ ስም",
+        phone_ph: "የአገር ኮድ ያካትቱ (ለምሳሌ +251...)",
+        details_ph: "ምን ተከሰተ፣ መቼ፣ የት እና ማን ተካተቱ በዝርዝር ይግለጹ…"
       }
     };
 
-    /* Apply translation by data attributes */
-    function applyI18n(lang) {
-      // elements with inner text (or HTML in the intro)
-      document.querySelectorAll("[data-i18n]").forEach(el => {
-        const key = el.getAttribute("data-i18n");
-        const val = I18N[lang][key];
-        if (!val) return;
-        if (key === "intro") el.innerHTML = val; else el.textContent = val;
+    const $ = (sel, ctx=document) => ctx.querySelector(sel);
+    const $$ = (sel, ctx=document) => Array.from(ctx.querySelectorAll(sel));
+    const langSel = $('#lang');
+
+    function applyLang(lang){
+      document.documentElement.lang = (lang === 'am' ? 'am' : 'en');
+      // text nodes
+      $$('[data-i18n]').forEach(el=>{
+        const key = el.getAttribute('data-i18n');
+        el.textContent = t[lang][key] || t.en[key] || '';
       });
       // placeholders
-      document.querySelectorAll("[data-i18n-ph]").forEach(el => {
-        const key = el.getAttribute("data-i18n-ph");
-        if (I18N[lang][key]) el.placeholder = I18N[lang][key];
+      $$('[data-ph]').forEach(el=>{
+        const key = el.getAttribute('data-ph');
+        el.placeholder = t[lang][key] || t.en[key] || '';
       });
-      // messages (we update their content so they match the chosen language)
-      const okMsg = document.getElementById('msg-ok');
-      const errMsg = document.getElementById('msg-err');
-      if (okMsg) okMsg.textContent = I18N[lang].msg_ok;
-      if (errMsg) errMsg.textContent = I18N[lang].msg_err;
-
-      // document language
-      document.documentElement.lang = lang;
-      try { localStorage.setItem('lang', lang); } catch(e) {}
     }
 
-    // Init + events
-    const langSelect = document.getElementById("language");
-    langSelect.addEventListener("change", (e) => applyI18n(e.target.value));
-    (function initLang(){
-      let lang = 'en';
-      try { lang = localStorage.getItem('lang') || 'en'; } catch(e) {}
-      langSelect.value = lang;
-      applyI18n(lang);
-    })();
+    // init from saved preference or default to English
+    const saved = localStorage.getItem('kt_lang') || 'en';
+    langSel.value = saved;
+    applyLang(saved);
 
-    /* Submit handler (works once your /api/report is live and Vercel env vars are set) */
-    const form = document.getElementById('report-form');
-    const okMsg = document.getElementById('msg-ok');
-    const errMsg = document.getElementById('msg-err');
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      okMsg.style.display = 'none';
-      errMsg.style.display = 'none';
-
-      const data = Object.fromEntries(new FormData(form).entries());
-
-      // simple required check (browser enforces too)
-      const required = ['incident_date','location','reporting_country','reporter_name','phone','details'];
-      for (const k of required) {
-        if (!data[k] || String(data[k]).trim() === '') {
-          errMsg.textContent = (document.documentElement.lang === 'am')
-            ? 'እባክዎ አስፈላጊ ሁሉንም መስኮች ይሙሉ።'
-            : 'Please fill out all required fields.';
-          errMsg.style.display = 'block';
-          return;
-        }
-      }
-
-      try {
-        const r = await fetch('/api/report', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
-        });
-
-        if (!r.ok) {
-          const t = await r.text();
-          throw new Error(t || 'Request failed');
-        }
-
-        okMsg.style.display = 'block';
-        form.reset();
-      } catch (err) {
-        console.error(err);
-        errMsg.textContent = (document.documentElement.lang === 'am')
-          ? 'ልኬት አልተሳካም። እባክዎን ደግመው ይሞክሩ።'
-          : 'Submission failed. Please try again.';
-        errMsg.style.display = 'block';
-      }
+    langSel.addEventListener('change', ()=>{
+      localStorage.setItem('kt_lang', langSel.value);
+      applyLang(langSel.value);
     });
   </script>
 </body>
