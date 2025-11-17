@@ -6,7 +6,6 @@ module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method Not Allowed' });
@@ -22,12 +21,14 @@ module.exports = async (req, res) => {
   try {
     // Get latest 20 incidents, newest first
     const url = `${SUPABASE_URL}/rest/v1/incidents?select=*&order=reported_at.desc.nullslast&limit=20`;
+
     const headers = {
       apikey: SERVICE_ROLE,
       Authorization: `Bearer ${SERVICE_ROLE}`,
       'Content-Type': 'application/json',
-      'Content-Profile': 'public',
-      Accept: 'application/json'
+      Accept: 'application/json',
+      // 👇 tell Supabase to use the public schema, not graphql_public
+      'Content-Profile': 'public'
     };
 
     const resp = await fetch(url, { method: 'GET', headers });
