@@ -1,4 +1,5 @@
 // api/incidents.js
+
 // Returns the most recent incident reports from the 'incidents' table.
 
 module.exports = async (req, res) => {
