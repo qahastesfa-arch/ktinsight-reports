@@ -6,6 +6,7 @@ module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method Not Allowed' });
@@ -27,7 +28,7 @@ module.exports = async (req, res) => {
       Authorization: `Bearer ${SERVICE_ROLE}`,
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      // 👇 IMPORTANT: tell Supabase to use the public schema, not graphql_public
+      // 👇 This is the crucial part: use the public schema
       'Content-Profile': 'public'
     };
 
@@ -35,6 +36,8 @@ module.exports = async (req, res) => {
     const text = await resp.text();
 
     if (!resp.ok) {
+      // Log and return error
+      console.error('Supabase select failed:', text);
       return res.status(502).json({ error: 'Supabase select failed', detail: text });
     }
 
