@@ -68,8 +68,11 @@ module.exports = async (req, res) => {
       'Content-Type': 'application/json',
       apikey: SERVICE_ROLE,
       Authorization: `Bearer ${SERVICE_ROLE}`,
-      Prefer: 'return=representation'
+      Prefer: 'return=representation',
+      // 👇 THIS tells Supabase to use the public schema, not graphql_public
+      'Content-Profile': 'public'
     };
+
     const payload = [{
       reported_at,
       region,
@@ -93,4 +96,3 @@ module.exports = async (req, res) => {
     return res.status(500).json({ error: 'Server error' });
   }
 };
-
