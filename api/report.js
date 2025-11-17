@@ -38,10 +38,10 @@ module.exports = async (req, res) => {
     reporter_name,     // optional
     phone,             // optional
     details,           // required
-    evidence_url       // optional (from /api/upload)
+    evidence_url       // optional; from /api/upload
   } = body;
 
-  // Validate required fields
+  // Validate required fields only
   const required = { incident_date, location, reporting_country, details };
   for (const [k, v] of Object.entries(required)) {
     if (!v || String(v).trim() === '') {
@@ -58,10 +58,8 @@ module.exports = async (req, res) => {
   // Build optional contact string
   const contactParts = [];
   if (reporter_name && reporter_name.trim()) contactParts.push(reporter_name.trim());
-  if (phone && phone.trim())          contactParts.push(phone.trim());
-  if (reporting_country && reporting_country.trim()) {
-    contactParts.push(`from ${reporting_country.trim()}`);
-  }
+  if (phone && phone.trim()) contactParts.push(phone.trim());
+  if (reporting_country && reporting_country.trim()) contactParts.push(`from ${reporting_country.trim()}`);
   const contact = contactParts.length ? contactParts.join(' | ') : null;
 
   try {
@@ -71,7 +69,7 @@ module.exports = async (req, res) => {
       apikey: SERVICE_ROLE,
       Authorization: `Bearer ${SERVICE_ROLE}`,
       Prefer: 'return=representation',
-      // 👇 This is CRITICAL to use the public schema
+      // 👇 THIS tells Supabase to use the public schema, not graphql_public
       'Content-Profile': 'public'
     };
 
@@ -93,7 +91,6 @@ module.exports = async (req, res) => {
 
     const [row] = JSON.parse(text);
     return res.status(200).json({ ok: true, id: row.id, created_at: row.created_at });
-
   } catch (err) {
     console.error('report error', err);
     return res.status(500).json({ error: 'Server error' });
