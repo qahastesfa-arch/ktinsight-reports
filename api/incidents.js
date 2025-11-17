@@ -27,7 +27,7 @@ module.exports = async (req, res) => {
       Authorization: `Bearer ${SERVICE_ROLE}`,
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      // 👇 tell Supabase to use the public schema, not graphql_public
+      // 👇 IMPORTANT: tell Supabase to use the public schema, not graphql_public
       'Content-Profile': 'public'
     };
 
