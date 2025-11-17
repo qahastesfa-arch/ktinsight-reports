@@ -311,4 +311,68 @@
     });
   </script>
 </body>
+<script>
+  const form  = document.getElementById('report-form');
+  const okMsg = document.getElementById('msg-ok');
+  const errMsg= document.getElementById('msg-err');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (okMsg)  { okMsg.style.display  = 'none'; okMsg.textContent = ''; }
+    if (errMsg) { errMsg.style.display = 'none'; errMsg.textContent = ''; }
+
+    try {
+      const fd = new FormData(form);
+
+      // 1) Upload evidence IF a file is chosen
+      let evidence_url = null;
+      const file = fd.get('evidence');
+      if (file && file.name && file.size > 0) {
+        const up = await fetch('/api/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': file.type || 'application/octet-stream' },
+          body: file
+        });
+        if (!up.ok) {
+          const txt = await up.text();
+          throw new Error('Evidence upload failed: ' + txt);
+        }
+        const upJson = await up.json();
+        evidence_url = upJson.path || null;
+      }
+
+      // 2) Send JSON to /api/report
+      const payload = {
+        incident_date: fd.get('incident_date'),
+        location: fd.get('location'),
+        reporting_country: fd.get('reporting_country'),
+        reporter_name: fd.get('reporter_name') || '',
+        phone: fd.get('phone') || '',
+        details: fd.get('details'),
+        evidence_url
+      };
+
+      const r = await fetch('/api/report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!r.ok) {
+        const t = await r.text();
+        throw new Error(t || 'Report failed');
+      }
+
+      okMsg.textContent = 'Your report has been submitted. Thank you.';
+      okMsg.style.display = 'block';
+      form.reset();
+    } catch (err) {
+      console.error(err);
+      errMsg.textContent = 'Submission failed. ' + (err.message || '');
+      errMsg.style.display = 'block';
+    }
+  });
+</script>
+
+  
 </html>
