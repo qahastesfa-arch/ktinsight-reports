@@ -13,12 +13,7 @@
       --bg:#1a1a1a; --panel:#2b2b2b; --text:#f5f5f5; --muted:#e0e0e0;
       --gold:#f0d68a; --red:#8c1111; --red-2:#b11b1b; --stroke:#555;
     }
-    body {
-      font-family: Inter, "Noto Sans Ethiopic", Arial, sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      margin: 0;
-    }
+    body { font-family: Inter, "Noto Sans Ethiopic", Arial, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; }
     header {
       text-align: center;
       background: linear-gradient(180deg, #4b0000 0%, #2a0000 100%);
@@ -27,16 +22,9 @@
       border-bottom: 2px solid var(--red);
       position: sticky; top: 0; z-index: 5;
     }
-    .topbar {
-      display: flex; gap: 12px; align-items: center; justify-content: center; margin-bottom: 8px;
-    }
-    .lang-select {
-      background: #220000; color: #fff; border: 1px solid #4a0d0d;
-      border-radius: 6px; padding: 6px 10px; font-size: 0.95rem;
-    }
-    img.logo {
-      max-width: 240px; height: auto; margin: 6px 0 10px; filter: grayscale(20%) contrast(120%);
-    }
+    .topbar { display: flex; gap: 12px; align-items: center; justify-content: center; margin-bottom: 8px; }
+    .lang-select { background: #220000; color: #fff; border: 1px solid #4a0d0d; border-radius: 6px; padding: 6px 10px; font-size: 0.95rem; }
+    img.logo { max-width: 240px; height: auto; margin: 6px 0 10px; filter: grayscale(20%) contrast(120%); }
     h1, h2 { text-align: center; color: var(--gold); margin: 6px 0 0; }
     main {
       max-width: 680px; margin: 40px auto; background: var(--panel); padding: 28px;
@@ -70,7 +58,7 @@
 
     <img src="https://raw.githubusercontent.com/qahastesfa-arch/ktinsight-reports/main/EOTC.png"
          alt="Ethiopian Orthodox Church Logo" class="logo">
-    <h1 data-i18n="title"> Report Violence Against the Ethiopian Orthodox Church  </h1>
+    <h1 data-i18n="title"> Report Violence Against the Ethiopian Orthodox Church </h1>
   </header>
 
   <main>
@@ -93,18 +81,21 @@
         <input type="text" name="reporting_country" placeholder="e.g. United States, Ethiopia" required data-ph="country_ph">
       </label>
 
-      <label><span data-i18n="name_label">Your Full Name</span>:
-        <input type="text" name="reporter_name" placeholder="Full name" required data-ph="name_ph">
+      <!-- NOW OPTIONAL -->
+      <label><span data-i18n="name_label">Your Full Name (optional)</span>:
+        <input type="text" name="reporter_name" placeholder="Full name" data-ph="name_ph">
       </label>
 
-      <label><span data-i18n="phone_label">Phone Number</span>:
-        <input type="tel" name="phone" placeholder="Include country code (e.g. +251...)" required data-ph="phone_ph">
+      <!-- NOW OPTIONAL -->
+      <label><span data-i18n="phone_label">Phone Number (optional)</span>:
+        <input type="tel" name="phone" placeholder="Include country code (e.g. +251...)" data-ph="phone_ph">
       </label>
 
       <label><span data-i18n="details_label">Detailed Account of the Incident</span>:
         <textarea name="details" rows="6" placeholder="Describe what happened, when, where, and who was involved…" required data-ph="details_ph"></textarea>
       </label>
 
+      <!-- Remains optional; label clarifies it -->
       <label><span data-i18n="evidence_label">Upload Photo or Evidence (optional)</span>:
         <input type="file" name="evidence" accept="image/*">
       </label>
@@ -131,8 +122,8 @@
         date_label: "Date of Incident",
         location_label: "Location (City/Region)",
         reporting_country_label: "Country You Are Reporting From",
-        name_label: "Your Full Name",
-        phone_label: "Phone Number",
+        name_label: "Your Full Name (optional)",
+        phone_label: "Phone Number (optional)",
         details_label: "Detailed Account of the Incident",
         evidence_label: "Upload Photo or Evidence (optional)",
         privacy_note: "Please avoid sharing sensitive IDs. Only include personally identifying details if necessary for verification.",
@@ -152,8 +143,8 @@
         date_label: "የክስተቱ ቀን",
         location_label: "ቦታ (ከተማ/ክልል)",
         reporting_country_label: "ከየት አገር እየገለፁ ነው?",
-        name_label: "ሙሉ ስምዎ",
-        phone_label: "ስልክ ቁጥር",
+        name_label: "ሙሉ ስምዎ (አማራጭ)",
+        phone_label: "ስልክ ቁጥር (አማራጭ)",
         details_label: "የክስተቱ ዝርዝር መግለጫ",
         evidence_label: "ፎቶ ወይም ማስረጃ ማስገቢያ (አማራጭ)",
         privacy_note: "እባኮትን በጣም ግል መረጃዎችን አትጨምሩ። ማረጋገጫ ከሚፈልግ ብቻ እንጂ ስለ ግለሰብ መረጃ አትስጡ።",
