@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EOTC Incident Reports - Recent</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wght@400;600&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#1a1a1a; --panel:#2b2b2b; --text:#f5f5f5; --muted:#e0e0e0;
+      --gold:#f0d68a; --red:#8c1111; --stroke:#555;
+    }
+    body {
+      font-family: Inter, "Noto Sans Ethiopic", Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+    }
+    header {
+      text-align: center;
+      background: linear-gradient(180deg, #4b0000 0%, #2a0000 100%);
+      color: var(--text);
+      padding: 24px 16px;
+      border-bottom: 2px solid var(--red);
+    }
+    img.logo {
+      max-width: 200px;
+      height: auto;
+      margin: 6px 0 10px;
+      filter: grayscale(20%) contrast(120%);
+    }
+    h1 { color: var(--gold); margin: 8px 0 4px; }
+    main {
+      max-width: 900px;
+      margin: 30px auto 40px;
+      padding: 0 16px 24px;
+    }
+    .intro {
+      max-width: 700px;
+      margin: 0 auto 20px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.6;
+    }
+    .status {
+      text-align:center;
+      margin: 16px auto;
+      font-size:0.95rem;
+      color:#ccc;
+    }
+    .list {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .card {
+      background: var(--panel);
+      border-radius: 10px;
+      border: 1px solid #333;
+      padding: 14px 16px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.4);
+    }
+    .card-header {
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px 16px;
+      align-items:baseline;
+      margin-bottom:6px;
+    }
+    .card-date {
+      font-weight:600;
+      color: var(--gold);
+      font-size:0.98rem;
+    }
+    .card-location {
+      font-size:0.95rem;
+      color: var(--muted);
+    }
+    .card-summary {
+      margin-top:4px;
+      font-size:0.97rem;
+      line-height:1.5;
+    }
+    .card-contact {
+      margin-top:6px;
+      font-size:0.85rem;
+      color:#aaa;
+    }
+    .card-evidence {
+      margin-top:6px;
+      font-size:0.84rem;
+      color:#a5c3ff;
+    }
+    .card-evidence code {
+      font-size:0.8rem;
+      background:#181818;
+      padding:2px 4px;
+      border-radius:3px;
+      border:1px solid #333;
+    }
+    footer {
+      text-align:center;
+      margin:20px 0;
+      font-size:0.85rem;
+      color:#777;
+    }
+    a.inline {
+      color:#9ecbff;
+      text-decoration:none;
+    }
+    a.inline:hover { text-decoration:underline; }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="https://raw.githubusercontent.com/qahastesfa-arch/ktinsight-reports/main/EOTC.png"
+         alt="Ethiopian Orthodox Church Logo" class="logo">
+    <h1>Recent Incident Reports</h1>
+  </header>
+
+  <main>
+    <p class="intro">
+      This page shows the most recent reports submitted to the Ethiopian Orthodox Church incident reporting system.
+      Details may include location, summary, and optional contact information. Evidence file paths (if any) are listed for internal follow-up.
+    </p>
+
+    <div id="status" class="status">Loading latest reports…</div>
+    <div id="list" class="list"></div>
+  </main>
+
+  <footer>
+    © 2025 Ethiopian Orthodox Church Incident Reporting |
+    <a href="/index.html" class="inline">Submit a new report</a>
+  </footer>
+
+  <script>
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    async function loadIncidents() {
+      const statusEl = document.getElementById('status');
+      const listEl   = document.getElementById('list');
+
+      try {
+        const resp = await fetch('/api/incidents');
+        if (!resp.ok) {
+          const txt = await resp.text();
+          console.error('API error', txt);
+          statusEl.textContent = 'Failed to load reports from the server.';
+          return;
+        }
+        const data = await resp.json();
+
+        if (!Array.isArray(data) || data.length === 0) {
+          statusEl.textContent = 'No incident reports have been recorded yet.';
+          return;
+        }
+
+        statusEl.textContent = `Showing ${data.length} most recent report(s).`;
+
+        const html = data.map(inc => {
+          const reportedAt = inc.reported_at
+            ? new Date(inc.reported_at).toLocaleString()
+            : 'Unknown date';
+
+          const region   = escapeHtml(inc.region || 'Unknown location');
+          const summary  = escapeHtml(inc.summary || '');
+          const contact  = escapeHtml(inc.contact || '');
+          const evidence = escapeHtml(inc.evidence_url || '');
+
+          return `
+            <article class="card">
+              <div class="card-header">
+                <div class="card-date">${reportedAt}</div>
+                <div class="card-location">${region}</div>
+              </div>
+              <div class="card-summary">${summary}</div>
+              ${contact
+                ? `<div class="card-contact"><strong>Contact:</strong> ${contact}</div>`
+                : ''}
+              ${evidence
+                ? `<div class="card-evidence"><strong>Evidence path:</strong> <code>${evidence}</code></div>`
+                : ''}
+            </article>
+          `;
+        }).join('');
+
+        listEl.innerHTML = html;
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent = 'An unexpected error occurred while loading reports.';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadIncidents);
+  </script>
+</body>
+</html>
