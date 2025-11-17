@@ -1,5 +1,4 @@
 // api/incidents.js
-
 // Returns the most recent incident reports from the 'incidents' table.
 
 module.exports = async (req, res) => {
@@ -29,15 +28,14 @@ module.exports = async (req, res) => {
       Authorization: `Bearer ${SERVICE_ROLE}`,
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      // 👇 This is the crucial part: use the public schema
-      'Content-Profile': 'public'
+      // 👇 IMPORTANT for GET: tell Supabase which schema to read from
+      'Accept-Profile': 'public'
     };
 
     const resp = await fetch(url, { method: 'GET', headers });
     const text = await resp.text();
 
     if (!resp.ok) {
-      // Log and return error
       console.error('Supabase select failed:', text);
       return res.status(502).json({ error: 'Supabase select failed', detail: text });
     }
