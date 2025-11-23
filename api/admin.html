@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Admin Review Queue</title>
+  <style>
+    body{font-family:system-ui;background:#111;color:#eee;padding:20px;max-width:900px;margin:auto;}
+    .card{background:#1e1e1e;padding:12px;border-radius:8px;margin:10px 0;border:1px solid #333;}
+    button{margin-right:8px;padding:6px 10px;border-radius:6px;border:none;cursor:pointer;}
+    .approve{background:#2e7d32;color:#fff;}
+    .reject{background:#c62828;color:#fff;}
+    input{padding:6px;border-radius:6px;border:1px solid #555;background:#000;color:#fff;width:100%;}
+  </style>
+</head>
+<body>
+  <h2>Pending Incident Reports (Admin)</h2>
+  <p>Enter your admin token to load and review reports:</p>
+  <input id="token" placeholder="Paste ADMIN_TOKEN here" />
+  <button onclick="loadPending()">Load Pending Reports</button>
+
+  <div id="list"></div>
+
+  <script>
+    async function loadPending(){
+      const token = document.getElementById('token').value.trim();
+      const list = document.getElementById('list');
+      list.innerHTML = "Loading...";
+
+      const r = await fetch('/api/pending-incidents', {
+        headers: { 'x-admin-token': token }
+      });
+
+      if(!r.ok){
+        list.innerHTML = "Failed to load pending reports.";
+        return;
+      }
+
+      const data = await r.json();
+      if(!data.length){
+        list.innerHTML = "No pending reports.";
+        return;
+      }
+
+      list.innerHTML = data.map(d => `
+        <div class="card">
+          <div><b>ID:</b> ${d.id}</div>
+          <div><b>Date:</b> ${d.reported_at || ''}</div>
+          <div><b>Region:</b> ${d.region || ''}</div>
+          <div><b>Summary:</b><br>${(d.summary||'').replace(/</g,'&lt;')}</div>
+          ${d.contact ? `<div><b>Contact:</b> ${d.contact}</div>`:''}
+          ${d.evidence_url ? `<div><b>Evidence:</b> ${d.evidence_url}</div>`:''}
+          <br>
+          <button class="approve" onclick="review('${d.id}','approved')">Approve</button>
+          <button class="reject" onclick="review('${d.id}','rejected')">Reject</button>
+        </div>
+      `).join('');
+    }
+
+    async function review(id, status){
+      const token = document.getElementById('token').value.trim();
+      const r = await fetch('/api/review-incident', {
+        method: 'POST',
+        headers: {
+          'Content-Type':'application/json',
+          'x-admin-token': token
+        },
+        body: JSON.stringify({ id, status })
+      });
+
+      if(r.ok){
+        alert(status.toUpperCase() + " ✓");
+        loadPending();
+      } else {
+        alert("Update failed");
+      }
+    }
+  </script>
+</body>
+</html>
