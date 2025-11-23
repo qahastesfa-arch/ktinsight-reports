@@ -21,7 +21,7 @@ module.exports = async (req, res) => {
 
   try {
     // Get latest 20 incidents, newest first
-    const url = `${SUPABASE_URL}/rest/v1/incidents?select=*&order=reported_at.desc.nullslast&limit=20`;
+    const url = `${SUPABASE_URL}/rest/v1/incidents?select=*&status=eq.approved&order=reported_at.desc.nullslast&limit=20`;
 
     const headers = {
       apikey: SERVICE_ROLE,
