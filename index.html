@@ -311,7 +311,77 @@
     });
   </script>
 </body>
+<div id="login-gate" style="
+  position: fixed; inset: 0; background: white; z-index: 9999;
+  display: grid; place-items: center; padding: 24px; font-family: sans-serif;
+">
+  <form id="login-form" style="
+    width: 360px; max-width: 90vw; border: 1px solid #ddd;
+    border-radius: 12px; padding: 20px;
+  ">
+    <h2 style="margin: 0 0 8px;">KT Insight Reports</h2>
+    <p style="margin: 0 0 12px;">Enter the shared password to continue.</p>
+
+    <input id="login-password" type="password" placeholder="Password" style="
+      width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc;
+      margin-bottom: 8px;
+    "/>
+
+    <div id="login-error" style="color: crimson; margin-bottom: 8px; display:none;"></div>
+
+    <button type="submit" style="
+      width: 100%; padding: 10px; border-radius: 8px; border: none;
+      cursor: pointer;
+    ">Unlock</button>
+  </form>
+</div>
+
 <script>
+(async function () {
+  const gate = document.getElementById("login-gate");
+  const form = document.getElementById("login-form");
+  const input = document.getElementById("login-password");
+  const err = document.getElementById("login-error");
+
+  // Check if already authed
+  try {
+    const r = await fetch("/api/session");
+    const j = await r.json();
+    if (j.ok) {
+      gate.style.display = "none";
+      return;
+    }
+  } catch (e) {}
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    err.style.display = "none";
+
+    const password = input.value.trim();
+    if (!password) return;
+
+    try {
+      const r = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password })
+      });
+
+      if (r.ok) {
+        gate.style.display = "none";
+      } else {
+        err.textContent = "Incorrect password.";
+        err.style.display = "block";
+      }
+    } catch (e) {
+      err.textContent = "Login failed. Try again.";
+      err.style.display = "block";
+    }
+  });
+})();
+</script>
+
+  <script>
   const form  = document.getElementById('report-form');
   const okMsg = document.getElementById('msg-ok');
   const errMsg= document.getElementById('msg-err');
