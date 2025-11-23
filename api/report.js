@@ -74,13 +74,14 @@ module.exports = async (req, res) => {
     };
 
     const payload = [{
-      reported_at,
-      region,
-      summary,
-      category,
-      contact,
-      evidence_url: evidence_url || null
-    }];
+  reported_at,
+  region,
+  summary,
+  category,
+  contact,
+  evidence_url: evidence_url || null,
+  status: 'pending'
+}];
 
     const resp = await fetch(url, { method: 'POST', headers, body: JSON.stringify(payload) });
     const text = await resp.text();
