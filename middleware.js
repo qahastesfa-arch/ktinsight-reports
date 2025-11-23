@@ -1,14 +1,30 @@
-import { next } from '@vercel/edge';
+import { NextResponse } from "next/server";
 
-export default function middleware(req) {
-  return next({
+export const config = {
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)"],
+};
+
+export function middleware(req) {
+  const user = process.env.BASIC_AUTH_USER;
+  const pass = process.env.BASIC_AUTH_PASS;
+
+  if (!user || !pass) return NextResponse.next();
+
+  const authHeader = req.headers.get("authorization");
+
+  if (authHeader) {
+    const [scheme, encoded] = authHeader.split(" ");
+    if (scheme === "Basic" && encoded) {
+      const decoded = Buffer.from(encoded, "base64").toString();
+      const [u, p] = decoded.split(":");
+      if (u === user && p === pass) return NextResponse.next();
+    }
+  }
+
+  return new NextResponse("Authentication required", {
+    status: 401,
     headers: {
-      'Referrer-Policy': 'origin-when-cross-origin',
-      'X-Frame-Options': 'DENY',
-      'X-Content-Type-Options': 'nosniff',
-      'X-DNS-Prefetch-Control': 'on',
-      'Strict-Transport-Security':
-        'max-age=31536000; includeSubDomains; preload',
+      "WWW-Authenticate": 'Basic realm="KT Insight Reports"',
     },
   });
 }
