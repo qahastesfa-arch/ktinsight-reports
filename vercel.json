@@ -1,5 +1,28 @@
 {
   "rewrites": [
-    { "source": "/", "destination": "/view.html" }
+    {
+      "source": "/",
+      "destination": "/index.html",
+      "has": [
+        { "type": "host", "value": "reports.ktinsight.com" }
+      ]
+    },
+    {
+      "source": "/",
+      "destination": "/view.html",
+      "has": [
+        { "type": "host", "value": "voices.ktinsight.com" }
+      ]
+    },
+
+    // Optional: keep old view.html URL working on either domain
+    {
+      "source": "/view.html",
+      "destination": "/view.html"
+    },
+    {
+      "source": "/index.html",
+      "destination": "/index.html"
+    }
   ]
 }
