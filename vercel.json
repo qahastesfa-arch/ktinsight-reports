@@ -1,28 +1,27 @@
 {
-  "rewrites": [
+  "routes": [
     {
-      "source": "/",
-      "destination": "/index.html",
-      "has": [
-        { "type": "host", "value": "reports.ktinsight.com" }
-      ]
+      "handle": "filesystem"
     },
+
     {
-      "source": "/",
-      "destination": "/view.html",
+      "src": "^/$",
+      "dest": "/view.html",
       "has": [
         { "type": "host", "value": "voices.ktinsight.com" }
       ]
     },
-
-    // Optional: keep old view.html URL working on either domain
     {
-      "source": "/view.html",
-      "destination": "/view.html"
+      "src": "^/$",
+      "dest": "/index.html",
+      "has": [
+        { "type": "host", "value": "reports.ktinsight.com" }
+      ]
     },
+
     {
-      "source": "/index.html",
-      "destination": "/index.html"
+      "src": "/(.*)",
+      "dest": "/$1"
     }
   ]
 }
