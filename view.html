@@ -27,7 +27,7 @@
       border-bottom: 2px solid var(--red);
     }
     img.logo {
-      max-width: 320px; /* bigger logo */
+      max-width: 320px;
       height: auto;
       margin: 8px 0 12px;
       filter: grayscale(20%) contrast(120%);
@@ -99,7 +99,6 @@
       color:#aaa;
     }
 
-    /* Evidence image styling */
     .evidence-wrap {
       margin-top: 10px;
       display: flex;
@@ -134,6 +133,32 @@
       text-underline-offset: 2px;
     }
 
+    /* Hidden note that appears only on failure */
+    .evidence-note{
+      display:none;
+      font-size: 0.8rem;
+      color: #bdbdbd;
+      margin-top: 4px;
+    }
+    .evidence-note.show{
+      display:block;
+    }
+    .evidence-note a{
+      color: var(--link);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    /* Optional user-triggered “not opening?” */
+    .evidence-help{
+      font-size:0.8rem;
+      color:#bbb;
+      cursor:pointer;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      width: fit-content;
+    }
+
     footer {
       text-align:center;
       margin:20px 0;
@@ -141,7 +166,6 @@
       color:#777;
     }
 
-    /* Simple full-screen modal */
     .modal {
       position: fixed;
       inset: 0;
@@ -192,7 +216,6 @@
     © 2025 Ethiopian Orthodox Church Incident Reporting | KT Insight
   </footer>
 
-  <!-- Fullscreen modal for images -->
   <div id="modal" class="modal" aria-hidden="true">
     <div class="modal-close" id="modalClose">✕</div>
     <img id="modalImg" src="" alt="Evidence full view">
@@ -208,7 +231,6 @@
         .replace(/'/g, "&#039;");
     }
 
-    // Turn URLs inside text into clickable links
     function linkify(text){
       const safe = escapeHtml(text || "");
       return safe.replace(
@@ -217,7 +239,6 @@
       );
     }
 
-    // Basic check if a URL/path looks like an image
     function looksLikeImage(url){
       if(!url) return false;
       const u = url.toLowerCase();
@@ -254,34 +275,48 @@
           const summaryHtml  = linkify(inc.summary || '');
           const contact  = escapeHtml(inc.contact || '');
           const evidence = inc.evidence_url || '';
+          const safeEvidence = escapeHtml(evidence);
 
-          // Evidence block: show image inline OR show strong clickable link
+          const noteHtml = `
+            <div class="evidence-note">
+              If this evidence does not open or is unavailable, please contact the admin at
+              <a href="mailto:sales@ktinsight.com">sales@ktinsight.com</a>.
+            </div>
+          `;
+
           const evidenceBlock = evidence ? `
             <div class="evidence-wrap">
               <div class="evidence-label">Evidence</div>
+
               ${
                 looksLikeImage(evidence)
-                ? `<img class="evidence-img" src="${escapeHtml(evidence)}"
-                        alt="Evidence image" data-full="${escapeHtml(evidence)}">`
-                : `<div class="evidence-link">
-                     Evidence link:
-                     <a href="${escapeHtml(evidence)}" target="_blank" rel="noopener noreferrer">
-                       Click to open
-                     </a>
-                     <div style="margin-top:4px; font-size:0.8rem; color:#bdbdbd;">
-                       ${escapeHtml(evidence)}
-                     </div>
-                   </div>`
-              }
-              ${
-                looksLikeImage(evidence)
-                ? `<div class="evidence-link">
-                     Open original:
-                     <a href="${escapeHtml(evidence)}" target="_blank" rel="noopener noreferrer">
-                       Click to open full image
-                     </a>
-                   </div>`
-                : ''
+                ? `
+                    <img class="evidence-img"
+                         src="${safeEvidence}"
+                         alt="Evidence image"
+                         data-full="${safeEvidence}">
+                    <div class="evidence-link">
+                      Open original:
+                      <a href="${safeEvidence}" target="_blank" rel="noopener noreferrer">
+                        Click to open full image
+                      </a>
+                    </div>
+                    ${noteHtml}
+                  `
+                : `
+                    <div class="evidence-link">
+                      Evidence link:
+                      <a href="${safeEvidence}" target="_blank" rel="noopener noreferrer">
+                        Click to open
+                      </a>
+                      <div style="margin-top:4px; font-size:0.8rem; color:#bdbdbd;">
+                        ${safeEvidence}
+                      </div>
+                    </div>
+
+                    <div class="evidence-help">Evidence not opening?</div>
+                    ${noteHtml}
+                  `
               }
             </div>
           ` : '';
@@ -293,9 +328,7 @@
                 <div class="card-location">${region}</div>
               </div>
               <div class="card-summary">${summaryHtml}</div>
-              ${contact
-                ? `<div class="card-contact"><strong>Contact:</strong> ${contact}</div>`
-                : ''}
+              ${contact ? `<div class="card-contact"><strong>Contact:</strong> ${contact}</div>` : ''}
               ${evidenceBlock}
             </article>
           `;
@@ -303,12 +336,20 @@
 
         listEl.innerHTML = html;
 
-        // Hook up click-to-zoom for evidence images
+        // --- Image modal + failure detection
         const modal = document.getElementById('modal');
         const modalImg = document.getElementById('modalImg');
         const modalClose = document.getElementById('modalClose');
 
         listEl.querySelectorAll('.evidence-img').forEach(img => {
+          const wrap = img.closest('.evidence-wrap');
+          const note = wrap ? wrap.querySelector('.evidence-note') : null;
+
+          // show note ONLY if image fails to load
+          img.addEventListener('error', () => {
+            if(note) note.classList.add('show');
+          });
+
           img.addEventListener('click', () => {
             const full = img.getAttribute('data-full');
             modalImg.src = full;
@@ -322,13 +363,21 @@
           modal.setAttribute('aria-hidden','true');
           modalImg.src = '';
         }
-
         modalClose.addEventListener('click', closeModal);
         modal.addEventListener('click', (e)=> {
           if(e.target === modal) closeModal();
         });
         document.addEventListener('keydown', (e)=> {
           if(e.key === 'Escape') closeModal();
+        });
+
+        // --- Non-image evidence: show note only if user clicks “not opening?”
+        listEl.querySelectorAll('.evidence-help').forEach(btn => {
+          const wrap = btn.closest('.evidence-wrap');
+          const note = wrap ? wrap.querySelector('.evidence-note') : null;
+          btn.addEventListener('click', () => {
+            if(note) note.classList.add('show');
+          });
         });
 
       } catch (err) {
