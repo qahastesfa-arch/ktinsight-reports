@@ -11,6 +11,7 @@
     :root{
       --bg:#1a1a1a; --panel:#2b2b2b; --text:#f5f5f5; --muted:#e0e0e0;
       --gold:#f0d68a; --red:#8c1111; --stroke:#555;
+      --link:#9ecbff;
     }
     body {
       font-family: Inter, "Noto Sans Ethiopic", Arial, sans-serif;
@@ -25,12 +26,11 @@
       padding: 24px 16px;
       border-bottom: 2px solid var(--red);
     }
-  img.logo {
-  max-width: 320px;   /* was 200px */
-  height: auto;
-  margin: 8px 0 12px;
-  filter: grayscale(20%) contrast(120%);
-}
+    img.logo {
+      max-width: 320px; /* bigger logo */
+      height: auto;
+      margin: 8px 0 12px;
+      filter: grayscale(20%) contrast(120%);
     }
     h1 { color: var(--gold); margin: 8px 0 4px; }
 
@@ -84,8 +84,14 @@
     .card-summary {
       margin-top:4px;
       font-size:0.97rem;
-      line-height:1.5;
+      line-height:1.55;
       white-space: pre-wrap;
+    }
+    .card-summary a{
+      color: var(--link);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      word-break: break-all;
     }
     .card-contact {
       margin-top:6px;
@@ -118,9 +124,14 @@
       border-color: #777;
     }
     .evidence-link {
-      font-size: 0.82rem;
-      color: #9ecbff;
+      font-size: 0.85rem;
+      color: var(--link);
       word-break: break-all;
+    }
+    .evidence-link a{
+      color: var(--link);
+      text-decoration: underline;
+      text-underline-offset: 2px;
     }
 
     footer {
@@ -148,162 +159,3 @@
       border-radius: 10px;
       border: 1px solid #555;
       background: #000;
-    }
-    .modal-close {
-      position: absolute;
-      top: 16px;
-      right: 18px;
-      font-size: 26px;
-      color: #fff;
-      cursor: pointer;
-      user-select: none;
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <img src="https://raw.githubusercontent.com/qahastesfa-arch/ktinsight-reports/main/EOTC.png"
-         alt="Ethiopian Orthodox Church Logo" class="logo">
-    <h1>Recent Approved Incident Reports</h1>
-  </header>
-
-  <main>
-    <p class="intro">
-      This page shows approved reports submitted to the Ethiopian Orthodox Church incident reporting system.
-      Some incidents may include supporting photo evidence.
-    </p>
-
-    <div id="status" class="status">Loading latest reports…</div>
-    <div id="list" class="list"></div>
-  </main>
-
-  <footer>
-    © 2025 Ethiopian Orthodox Church Incident Reporting | KT Insight
-  </footer>
-
-  <!-- Fullscreen modal for images -->
-  <div id="modal" class="modal" aria-hidden="true">
-    <div class="modal-close" id="modalClose">✕</div>
-    <img id="modalImg" src="" alt="Evidence full view">
-  </div>
-
-  <script>
-    function escapeHtml(str) {
-      return String(str || '')
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
-
-    // Basic check if a URL looks like an image
-    function looksLikeImage(url){
-      if(!url) return false;
-      const u = url.toLowerCase();
-      return u.match(/\.(png|jpg|jpeg|gif|webp|bmp|svg)(\?.*)?$/);
-    }
-
-    async function loadIncidents() {
-      const statusEl = document.getElementById('status');
-      const listEl   = document.getElementById('list');
-
-      try {
-        const resp = await fetch('/api/incidents');
-        if (!resp.ok) {
-          const txt = await resp.text();
-          console.error('API error', txt);
-          statusEl.textContent = 'Failed to load reports from the server.';
-          return;
-        }
-        const data = await resp.json();
-
-        if (!Array.isArray(data) || data.length === 0) {
-          statusEl.textContent = 'No approved incident reports yet.';
-          return;
-        }
-
-        statusEl.textContent = `Showing ${data.length} most recent approved report(s).`;
-
-        const html = data.map(inc => {
-          const reportedAt = inc.reported_at
-            ? new Date(inc.reported_at).toLocaleString()
-            : 'Unknown date';
-
-          const region   = escapeHtml(inc.region || 'Unknown location');
-          const summary  = escapeHtml(inc.summary || '');
-          const contact  = escapeHtml(inc.contact || '');
-          const evidence = inc.evidence_url || '';
-
-          // Render evidence if it looks like an image URL/path
-          const evidenceBlock = evidence ? `
-            <div class="evidence-wrap">
-              <div class="evidence-label">Photo Evidence</div>
-              ${
-                looksLikeImage(evidence)
-                ? `<img class="evidence-img" src="${escapeHtml(evidence)}" alt="Evidence image" data-full="${escapeHtml(evidence)}">`
-                : `<div class="evidence-link">Evidence link: <a href="${escapeHtml(evidence)}" target="_blank" rel="noopener noreferrer">${escapeHtml(evidence)}</a></div>`
-              }
-              ${
-                looksLikeImage(evidence)
-                ? `<div class="evidence-link">Open original: <a href="${escapeHtml(evidence)}" target="_blank" rel="noopener noreferrer">${escapeHtml(evidence)}</a></div>`
-                : ''
-              }
-            </div>
-          ` : '';
-
-          return `
-            <article class="card">
-              <div class="card-header">
-                <div class="card-date">${reportedAt}</div>
-                <div class="card-location">${region}</div>
-              </div>
-              <div class="card-summary">${summary}</div>
-              ${contact
-                ? `<div class="card-contact"><strong>Contact:</strong> ${contact}</div>`
-                : ''}
-              ${evidenceBlock}
-            </article>
-          `;
-        }).join('');
-
-        listEl.innerHTML = html;
-
-        // Hook up click-to-zoom for evidence images
-        const modal = document.getElementById('modal');
-        const modalImg = document.getElementById('modalImg');
-        const modalClose = document.getElementById('modalClose');
-
-        listEl.querySelectorAll('.evidence-img').forEach(img => {
-          img.addEventListener('click', () => {
-            const full = img.getAttribute('data-full');
-            modalImg.src = full;
-            modal.classList.add('open');
-            modal.setAttribute('aria-hidden','false');
-          });
-        });
-
-        function closeModal(){
-          modal.classList.remove('open');
-          modal.setAttribute('aria-hidden','true');
-          modalImg.src = '';
-        }
-
-        modalClose.addEventListener('click', closeModal);
-        modal.addEventListener('click', (e)=> {
-          if(e.target === modal) closeModal();
-        });
-        document.addEventListener('keydown', (e)=> {
-          if(e.key === 'Escape') closeModal();
-        });
-
-      } catch (err) {
-        console.error(err);
-        statusEl.textContent = 'An unexpected error occurred while loading reports.';
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', loadIncidents);
-  </script>
-</body>
-</html>
