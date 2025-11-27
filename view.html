@@ -133,23 +133,19 @@
       text-underline-offset: 2px;
     }
 
-    /* Hidden note that appears only on failure */
     .evidence-note{
       display:none;
       font-size: 0.8rem;
       color: #bdbdbd;
       margin-top: 4px;
     }
-    .evidence-note.show{
-      display:block;
-    }
+    .evidence-note.show{ display:block; }
     .evidence-note a{
       color: var(--link);
       text-decoration: underline;
       text-underline-offset: 2px;
     }
 
-    /* Optional user-triggered “not opening?” */
     .evidence-help{
       font-size:0.8rem;
       color:#bbb;
@@ -204,8 +200,8 @@
 
   <main>
     <p class="intro">
-      This page shows approved reports submitted to the Ethiopian Orthodox Church incident reporting system.
-      Any links included in a report can be clicked. Photo evidence (if included) is shown below each report.
+      This page shows approved reports. Any links included in a report can be clicked.
+      Evidence files open through a secure, time-limited link.
     </p>
 
     <div id="status" class="status">Loading latest reports…</div>
@@ -275,7 +271,12 @@
           const summaryHtml  = linkify(inc.summary || '');
           const contact  = escapeHtml(inc.contact || '');
           const evidence = inc.evidence_url || '';
-          const safeEvidence = escapeHtml(evidence);
+
+          // evidence is stored as key, so build signed link
+          const evidenceKey = evidence.replace(/^evidence\//,'');
+          const evidenceLink = evidence
+            ? `/api/evidence?key=${encodeURIComponent(evidenceKey)}`
+            : '';
 
           const noteHtml = `
             <div class="evidence-note">
@@ -289,15 +290,15 @@
               <div class="evidence-label">Evidence</div>
 
               ${
-                looksLikeImage(evidence)
+                looksLikeImage(evidenceKey)
                 ? `
                     <img class="evidence-img"
-                         src="${safeEvidence}"
+                         src="${escapeHtml(evidenceLink)}"
                          alt="Evidence image"
-                         data-full="${safeEvidence}">
+                         data-full="${escapeHtml(evidenceLink)}">
                     <div class="evidence-link">
                       Open original:
-                      <a href="${safeEvidence}" target="_blank" rel="noopener noreferrer">
+                      <a href="${escapeHtml(evidenceLink)}" target="_blank" rel="noopener noreferrer">
                         Click to open full image
                       </a>
                     </div>
@@ -305,12 +306,12 @@
                   `
                 : `
                     <div class="evidence-link">
-                      Evidence link:
-                      <a href="${safeEvidence}" target="_blank" rel="noopener noreferrer">
+                      Evidence file:
+                      <a href="${escapeHtml(evidenceLink)}" target="_blank" rel="noopener noreferrer">
                         Click to open
                       </a>
                       <div style="margin-top:4px; font-size:0.8rem; color:#bdbdbd;">
-                        ${safeEvidence}
+                        ${escapeHtml(evidenceKey)}
                       </div>
                     </div>
 
@@ -336,7 +337,7 @@
 
         listEl.innerHTML = html;
 
-        // --- Image modal + failure detection
+        // Image modal + auto failure detection
         const modal = document.getElementById('modal');
         const modalImg = document.getElementById('modalImg');
         const modalClose = document.getElementById('modalClose');
@@ -345,7 +346,6 @@
           const wrap = img.closest('.evidence-wrap');
           const note = wrap ? wrap.querySelector('.evidence-note') : null;
 
-          // show note ONLY if image fails to load
           img.addEventListener('error', () => {
             if(note) note.classList.add('show');
           });
@@ -371,7 +371,7 @@
           if(e.key === 'Escape') closeModal();
         });
 
-        // --- Non-image evidence: show note only if user clicks “not opening?”
+        // Non-image evidence: show note only if user clicks
         listEl.querySelectorAll('.evidence-help').forEach(btn => {
           const wrap = btn.closest('.evidence-wrap');
           const note = wrap ? wrap.querySelector('.evidence-note') : null;
