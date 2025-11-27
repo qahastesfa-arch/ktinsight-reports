@@ -1,6 +1,6 @@
 // api/upload.js
-// Receives a file (image) as raw body and uploads it to the private 'evidence' bucket in Supabase Storage.
-// Returns: { ok: true, path: "evidence/<generated>.ext" }
+// Receives a file (image or PDF) as raw body and uploads it to the 'evidence' bucket in Supabase Storage.
+// Returns: { ok: true, path: "evidence/<generated>.<ext>" }
 
 module.exports = async (req, res) => {
   // CORS
@@ -17,6 +17,7 @@ module.exports = async (req, res) => {
   }
 
   try {
+    // Read raw body
     const chunks = [];
     for await (const c of req) chunks.push(c);
     const buf = Buffer.concat(chunks);
@@ -25,24 +26,52 @@ module.exports = async (req, res) => {
       return res.status(400).json({ error: 'No file uploaded' });
     }
 
-    const ct = req.headers['content-type'] || '';
-    const ext =
-      ct.includes('png')  ? 'png'  :
-      ct.includes('jpeg') ? 'jpg'  :
-      ct.includes('jpg')  ? 'jpg'  :
-      ct.includes('webp') ? 'webp' :
-      ct.includes('gif')  ? 'gif'  :
-                            'bin';
+    const ct = (req.headers['content-type'] || '').toLowerCase();
+
+    // --- 1) Extension from Content-Type
+    let ext =
+      ct.includes('png')   ? 'png'  :
+      ct.includes('jpeg')  ? 'jpg'  :
+      ct.includes('jpg')   ? 'jpg'  :
+      ct.includes('webp')  ? 'webp' :
+      ct.includes('gif')   ? 'gif'  :
+      ct.includes('pdf')   ? 'pdf'  :
+      ct.includes('heic')  ? 'heic' :
+      ct.includes('heif')  ? 'heif' :
+                             null;
+
+    // --- 2) Backup sniff by file signature (magic bytes)
+    // PDF starts with: 25 50 44 46  (" %PDF ")
+    // PNG starts with: 89 50 4E 47
+    // JPG starts with: FF D8 FF
+    // GIF starts with: 47 49 46 38
+    if (!ext) {
+      const head = buf.slice(0, 8);
+
+      if (head.slice(0, 4).toString() === '%PDF') ext = 'pdf';
+      else if (head[0] === 0x89 && head[1] === 0x50 && head[2] === 0x4E && head[3] === 0x47) ext = 'png';
+      else if (head[0] === 0xFF && head[1] === 0xD8 && head[2] === 0xFF) ext = 'jpg';
+      else if (head.slice(0, 3).toString() === 'GIF') ext = 'gif';
+      else ext = 'bin';
+    }
+
+    // Optional: reject anything except images + pdf
+    const allowed = ['png','jpg','webp','gif','pdf','heic','heif','bin'];
+    if (!allowed.includes(ext)) {
+      return res.status(400).json({ error: `Unsupported file type: ${ext}` });
+    }
 
     const objectName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
     const path = `evidence/${objectName}`;
+
+    const uploadCT = ct || (ext === 'pdf' ? 'application/pdf' : 'application/octet-stream');
 
     const r = await fetch(`${SUPABASE_URL}/storage/v1/object/${path}`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${SERVICE_ROLE}`,
         apikey: SERVICE_ROLE,
-        'Content-Type': ct || 'application/octet-stream',
+        'Content-Type': uploadCT,
         'x-upsert': 'true'
       },
       body: buf
@@ -53,7 +82,7 @@ module.exports = async (req, res) => {
       return res.status(500).json({ error: 'Upload failed', detail: text });
     }
 
-    return res.status(200).json({ ok: true, path });
+    return res.status(200).json({ ok: true, path, ext });
   } catch (err) {
     console.error('upload error', err);
     return res.status(500).json({ error: 'Server error' });
