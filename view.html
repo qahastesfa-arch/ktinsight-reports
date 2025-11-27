@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>EOTC Incident Reports - Recent</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wght@400;600&family=Inter:wght@400;600&display=swap" rel="stylesheet">
@@ -10,184 +10,98 @@
   <style>
     :root{
       --bg:#1a1a1a; --panel:#2b2b2b; --text:#f5f5f5; --muted:#e0e0e0;
-      --gold:#f0d68a; --red:#8c1111; --stroke:#555;
-      --link:#9ecbff;
+      --gold:#f0d68a; --red:#8c1111; --stroke:#555; --link:#9ecbff;
     }
-    body {
+    body{
       font-family: Inter, "Noto Sans Ethiopic", Arial, sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      margin: 0;
+      background: var(--bg); color: var(--text); margin:0;
     }
-    header {
-      text-align: center;
-      background: linear-gradient(180deg, #4b0000 0%, #2a0000 100%);
-      color: var(--text);
-      padding: 24px 16px;
-      border-bottom: 2px solid var(--red);
+    header{
+      text-align:center;
+      background: linear-gradient(180deg,#4b0000 0%,#2a0000 100%);
+      padding:24px 16px;
+      border-bottom:2px solid var(--red);
     }
-    img.logo {
-      max-width: 320px;
-      height: auto;
-      margin: 8px 0 12px;
+    img.logo{
+      max-width:320px; height:auto; margin:8px 0 12px;
       filter: grayscale(20%) contrast(120%);
     }
-    h1 { color: var(--gold); margin: 8px 0 4px; }
+    h1{ color:var(--gold); margin:8px 0 4px; }
 
-    main {
-      max-width: 900px;
-      margin: 30px auto 40px;
-      padding: 0 16px 24px;
+    main{
+      max-width:900px; margin:30px auto 40px; padding:0 16px 24px;
     }
-    .intro {
-      max-width: 700px;
-      margin: 0 auto 20px;
-      color: var(--muted);
-      text-align: center;
-      line-height: 1.6;
+    .intro{
+      max-width:700px; margin:0 auto 20px; color:var(--muted);
+      text-align:center; line-height:1.6;
     }
-    .status {
-      text-align:center;
-      margin: 16px auto;
-      font-size:0.95rem;
-      color:#ccc;
+    .status{ text-align:center; margin:16px auto; font-size:.95rem; color:#ccc; }
+
+    .list{ margin-top:10px; display:flex; flex-direction:column; gap:12px; }
+
+    .card{
+      background:var(--panel); border-radius:10px; border:1px solid #333;
+      padding:14px 16px; box-shadow:0 0 12px rgba(0,0,0,.4);
     }
-    .list {
-      margin-top: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+    .card-header{
+      display:flex; flex-wrap:wrap; gap:8px 16px; align-items:baseline; margin-bottom:6px;
     }
-    .card {
-      background: var(--panel);
-      border-radius: 10px;
-      border: 1px solid #333;
-      padding: 14px 16px;
-      box-shadow: 0 0 12px rgba(0,0,0,0.4);
-    }
-    .card-header {
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px 16px;
-      align-items:baseline;
-      margin-bottom:6px;
-    }
-    .card-date {
-      font-weight:600;
-      color: var(--gold);
-      font-size:0.98rem;
-    }
-    .card-location {
-      font-size:0.95rem;
-      color: var(--muted);
-    }
-    .card-summary {
-      margin-top:4px;
-      font-size:0.97rem;
-      line-height:1.55;
-      white-space: pre-wrap;
+    .card-date{ font-weight:600; color:var(--gold); font-size:.98rem; }
+    .card-location{ font-size:.95rem; color:var(--muted); }
+
+    .card-summary{
+      margin-top:4px; font-size:.97rem; line-height:1.55; white-space:pre-wrap;
     }
     .card-summary a{
-      color: var(--link);
-      text-decoration: underline;
-      text-underline-offset: 2px;
-      word-break: break-all;
-    }
-    .card-contact {
-      margin-top:6px;
-      font-size:0.85rem;
-      color:#aaa;
+      color:var(--link); text-decoration:underline; text-underline-offset:2px; word-break:break-all;
     }
 
-    .evidence-wrap {
-      margin-top: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
+    .card-contact{ margin-top:6px; font-size:.85rem; color:#aaa; }
+
+    .evidence-wrap{ margin-top:10px; display:flex; flex-direction:column; gap:6px; }
+    .evidence-label{ font-size:.85rem; color:#bbb; font-weight:600; }
+    .evidence-img{
+      width:100%; max-width:420px; border-radius:8px; border:1px solid #444; cursor:pointer;
+      transition:transform .15s ease, border .15s ease;
     }
-    .evidence-label {
-      font-size: 0.85rem;
-      color: #bbb;
-      font-weight: 600;
-    }
-    .evidence-img {
-      width: 100%;
-      max-width: 420px;
-      border-radius: 8px;
-      border: 1px solid #444;
-      cursor: pointer;
-      transition: transform 0.15s ease, border 0.15s ease;
-    }
-    .evidence-img:hover {
-      transform: scale(1.01);
-      border-color: #777;
-    }
-    .evidence-link {
-      font-size: 0.85rem;
-      color: var(--link);
-      word-break: break-all;
+    .evidence-img:hover{ transform:scale(1.01); border-color:#777; }
+
+    .evidence-link{
+      font-size:.85rem; color:var(--link); word-break:break-all;
     }
     .evidence-link a{
-      color: var(--link);
-      text-decoration: underline;
-      text-underline-offset: 2px;
+      color:var(--link); text-decoration:underline; text-underline-offset:2px;
     }
 
+    /* Note only on failure (hidden initially) */
     .evidence-note{
-      display:none;
-      font-size: 0.8rem;
-      color: #bdbdbd;
-      margin-top: 4px;
+      display:none; font-size:.8rem; color:#bdbdbd; margin-top:4px;
     }
     .evidence-note.show{ display:block; }
     .evidence-note a{
-      color: var(--link);
-      text-decoration: underline;
-      text-underline-offset: 2px;
+      color:var(--link); text-decoration:underline; text-underline-offset:2px;
     }
 
+    /* User-triggered help for non-images */
     .evidence-help{
-      font-size:0.8rem;
-      color:#bbb;
-      cursor:pointer;
-      text-decoration: underline;
-      text-underline-offset: 2px;
-      width: fit-content;
+      font-size:.8rem; color:#bbb; cursor:pointer;
+      text-decoration:underline; text-underline-offset:2px; width:fit-content;
     }
 
-    footer {
-      text-align:center;
-      margin:20px 0;
-      font-size:0.85rem;
-      color:#777;
-    }
+    footer{ text-align:center; margin:20px 0; font-size:.85rem; color:#777; }
 
-    .modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.85);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      z-index: 9999;
+    /* Modal */
+    .modal{
+      position:fixed; inset:0; background:rgba(0,0,0,.85);
+      display:none; align-items:center; justify-content:center; padding:20px; z-index:9999;
     }
-    .modal.open { display: flex; }
-    .modal img {
-      max-width: 95vw;
-      max-height: 95vh;
-      border-radius: 10px;
-      border: 1px solid #555;
-      background: #000;
+    .modal.open{ display:flex; }
+    .modal img{
+      max-width:95vw; max-height:95vh; border-radius:10px; border:1px solid #555; background:#000;
     }
-    .modal-close {
-      position: absolute;
-      top: 16px;
-      right: 18px;
-      font-size: 26px;
-      color: #fff;
-      cursor: pointer;
-      user-select: none;
+    .modal-close{
+      position:absolute; top:16px; right:18px; font-size:26px; color:#fff; cursor:pointer;
+      user-select:none;
     }
   </style>
 </head>
@@ -218,13 +132,13 @@
   </div>
 
   <script>
-    function escapeHtml(str) {
+    function escapeHtml(str){
       return String(str || '')
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
     }
 
     function linkify(text){
@@ -235,27 +149,27 @@
       );
     }
 
-    function looksLikeImage(url){
-      if(!url) return false;
-      const u = url.toLowerCase();
-      return u.match(/\.(png|jpg|jpeg|gif|webp|bmp|svg)(\?.*)?$/);
+    function looksLikeImage(key){
+      if(!key) return false;
+      const k = key.toLowerCase();
+      return k.match(/\.(png|jpg|jpeg|gif|webp|bmp|svg)(\?.*)?$/);
     }
 
-    async function loadIncidents() {
+    async function loadIncidents(){
       const statusEl = document.getElementById('status');
-      const listEl   = document.getElementById('list');
+      const listEl = document.getElementById('list');
 
-      try {
+      try{
         const resp = await fetch('/api/incidents');
-        if (!resp.ok) {
+        if(!resp.ok){
           const txt = await resp.text();
           console.error('API error', txt);
           statusEl.textContent = 'Failed to load reports from the server.';
           return;
         }
-        const data = await resp.json();
 
-        if (!Array.isArray(data) || data.length === 0) {
+        const data = await resp.json();
+        if(!Array.isArray(data) || data.length === 0){
           statusEl.textContent = 'No approved incident reports yet.';
           return;
         }
@@ -267,14 +181,17 @@
             ? new Date(inc.reported_at).toLocaleString()
             : 'Unknown date';
 
-          const region   = escapeHtml(inc.region || 'Unknown location');
-          const summaryHtml  = linkify(inc.summary || '');
-          const contact  = escapeHtml(inc.contact || '');
-          const evidence = inc.evidence_url || '';
+          const region = escapeHtml(inc.region || 'Unknown location');
+          const summaryHtml = linkify(inc.summary || '');
+          const contact = escapeHtml(inc.contact || '');
+          const evidenceRaw = inc.evidence_url || '';
 
-          // evidence is stored as key, so build signed link
-          const evidenceKey = evidence.replace(/^evidence\//,'');
-          const evidenceLink = evidence
+          // Normalize storage key:
+          // supports "evidence/xxx.pdf" or "xxx.pdf"
+          const evidenceKey = evidenceRaw.replace(/^evidence\//, '');
+
+          // ✅ IMPORTANT: always use proxy for opening evidence
+          const evidenceLink = evidenceKey
             ? `/api/evidence?key=${encodeURIComponent(evidenceKey)}`
             : '';
 
@@ -285,13 +202,12 @@
             </div>
           `;
 
-          const evidenceBlock = evidence ? `
+          const evidenceBlock = evidenceKey ? `
             <div class="evidence-wrap">
               <div class="evidence-label">Evidence</div>
-
               ${
                 looksLikeImage(evidenceKey)
-                ? `
+                  ? `
                     <img class="evidence-img"
                          src="${escapeHtml(evidenceLink)}"
                          alt="Evidence image"
@@ -304,13 +220,13 @@
                     </div>
                     ${noteHtml}
                   `
-                : `
+                  : `
                     <div class="evidence-link">
                       Evidence file:
                       <a href="${escapeHtml(evidenceLink)}" target="_blank" rel="noopener noreferrer">
                         Click to open
                       </a>
-                      <div style="margin-top:4px; font-size:0.8rem; color:#bdbdbd;">
+                      <div style="margin-top:4px;font-size:0.8rem;color:#bdbdbd;">
                         ${escapeHtml(evidenceKey)}
                       </div>
                     </div>
@@ -328,8 +244,11 @@
                 <div class="card-date">${reportedAt}</div>
                 <div class="card-location">${region}</div>
               </div>
+
               <div class="card-summary">${summaryHtml}</div>
+
               ${contact ? `<div class="card-contact"><strong>Contact:</strong> ${contact}</div>` : ''}
+
               ${evidenceBlock}
             </article>
           `;
@@ -337,7 +256,7 @@
 
         listEl.innerHTML = html;
 
-        // Image modal + auto failure detection
+        // Modal + auto-failure note for images
         const modal = document.getElementById('modal');
         const modalImg = document.getElementById('modalImg');
         const modalClose = document.getElementById('modalClose');
@@ -351,8 +270,7 @@
           });
 
           img.addEventListener('click', () => {
-            const full = img.getAttribute('data-full');
-            modalImg.src = full;
+            modalImg.src = img.getAttribute('data-full');
             modal.classList.add('open');
             modal.setAttribute('aria-hidden','false');
           });
@@ -363,6 +281,7 @@
           modal.setAttribute('aria-hidden','true');
           modalImg.src = '';
         }
+
         modalClose.addEventListener('click', closeModal);
         modal.addEventListener('click', (e)=> {
           if(e.target === modal) closeModal();
@@ -371,7 +290,7 @@
           if(e.key === 'Escape') closeModal();
         });
 
-        // Non-image evidence: show note only if user clicks
+        // Non-image evidence: show note only if user clicks help
         listEl.querySelectorAll('.evidence-help').forEach(btn => {
           const wrap = btn.closest('.evidence-wrap');
           const note = wrap ? wrap.querySelector('.evidence-note') : null;
@@ -380,7 +299,7 @@
           });
         });
 
-      } catch (err) {
+      } catch(err){
         console.error(err);
         statusEl.textContent = 'An unexpected error occurred while loading reports.';
       }
