@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ethiopian Orthodox Church Incident Reporting</title>
 
-  <!-- Ethiopic-friendly font -->
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wght@400;600&family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
   <style>
@@ -68,9 +67,7 @@
     }
     .status-msg.show{ display:block; }
 
-    /* =========================
-       PASSWORD LOGIN GATE STYLE
-       ========================= */
+    /* PASSWORD GATE */
     #login-gate {
       position: fixed; inset: 0; background: white; z-index: 9999;
       display: grid; place-items: center; padding: 24px; font-family: sans-serif;
@@ -91,22 +88,18 @@
       cursor: pointer; font-size: 15px; font-weight: 600;
       background:#111; color:#fff;
     }
-    #login-submit:hover { opacity: 0.9; }
   </style>
 </head>
 
 <body>
 
-  <!-- =========================
-       PASSWORD LOGIN GATE START
-       ========================= -->
+  <!-- PASSWORD LOGIN GATE -->
   <div id="login-gate">
     <form id="login-form">
       <h2>KT Insight Reports</h2>
       <p>Enter the shared password to continue.</p>
 
       <input id="login-password" type="password" placeholder="Password"/>
-
       <div id="login-error"></div>
 
       <button id="login-submit" type="submit">Unlock</button>
@@ -124,7 +117,7 @@
     const input = document.getElementById("login-password");
     const err = document.getElementById("login-error");
 
-    // 1) Check session cookie via server
+    // Check session
     try {
       const r = await fetch("/api/session");
       const j = await r.json();
@@ -132,11 +125,9 @@
         gate.style.display = "none";
         return;
       }
-    } catch (e) {
-      // ignore; user will log in
-    }
+    } catch (e) {}
 
-    // 2) Handle password submit
+    // Handle login
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       err.style.display = "none";
@@ -164,14 +155,8 @@
     });
   })();
   </script>
-  <!-- =======================
-       PASSWORD LOGIN GATE END
-       ======================= -->
 
-
-  <!-- =========================
-       MAIN REPORTING PAGE
-       ========================= -->
+  <!-- MAIN REPORTING PAGE -->
   <header>
     <div class="topbar">
       <label for="lang" style="font-weight:600;">🌐</label>
@@ -199,24 +184,23 @@
       </label>
 
       <label><span data-i18n="location_label">Location (City/Region)</span>:
-        <input type="text" name="location" required data-ph="location_ph" placeholder="e.g. Gondar, Amhara">
+        <input type="text" name="location" required data-ph="location_ph">
       </label>
 
       <label><span data-i18n="reporting_country_label">Country You Are Reporting From</span>:
-        <input type="text" name="reporting_country" required data-ph="country_ph" placeholder="e.g. United States, Ethiopia">
+        <input type="text" name="reporting_country" required data-ph="country_ph">
       </label>
 
       <label><span data-i18n="name_label">Your Full Name (optional)</span>:
-        <input type="text" name="reporter_name" data-ph="name_ph" placeholder="Full name">
+        <input type="text" name="reporter_name" data-ph="name_ph">
       </label>
 
       <label><span data-i18n="phone_label">Phone Number (optional)</span>:
-        <input type="tel" name="phone" data-ph="phone_ph" placeholder="Include country code (e.g. +251...)">
+        <input type="tel" name="phone" data-ph="phone_ph">
       </label>
 
       <label><span data-i18n="details_label">Detailed Account of the Incident</span>:
-        <textarea name="details" rows="6" required data-ph="details_ph"
-          placeholder="Describe what happened, when, where, and who was involved…"></textarea>
+        <textarea name="details" rows="6" required data-ph="details_ph"></textarea>
       </label>
 
       <label><span data-i18n="evidence_label">Upload Photo or Evidence (optional)</span>:
@@ -236,9 +220,8 @@
     © 2025 <span data-i18n="footer_org">Ethiopian Orthodox Church Incident Reporting</span> | ktinsight.com
   </footer>
 
-
   <script>
-    // ------- i18n dictionary -------
+    // ------- i18n -------
     const t = {
       en: {
         title: "Report Violence Against the Ethiopian Orthodox Church",
@@ -263,7 +246,7 @@
       am: {
         title: "በኢትዮጵያ ኦርቶዶክስ ተዋህዶ ቤተክርስቲያን ላይ የተፈጠረ ጥቃት ሪፖርት ያቀርቡ",
         subtitle: "የክስተት ሪፖርት መድረክ",
-        intro: "ይህ ገጽ በኢትዮጵያ ኦርቶዶክስ ቤተክርስቲያን ወይም በአመንታዊዎች፣ በካህናት እና በቤተክርስቲያን ንብረት ላይ የሚፈጠሩ ጥቃቶችን ለማስቀመጥ ይጠቅማል። እባክዎ በተቻለ መጠን በዝርዝር ያብራሩ።",
+        intro: "ይህ ገጽ በኢትዮጵያ ኦርቶዶክስ ቤተክርስቲያን ወይም በአመንታዊዎች፣ በካህናት እና በቤተክርስቲያን ንብረት ላይ የሚፈጠሩ ጥቃቶችን ለማስቀመጥ ይጠቅማል።",
         date_label: "የክስተቱ ቀን",
         location_label: "ቦታ (ከተማ/ክልል)",
         reporting_country_label: "ከየት አገር እየገለፁ ነው?",
@@ -306,7 +289,7 @@
       applyLang(langSel.value);
     });
 
-    // ------- Direct Supabase Upload (signed PUT) -------
+    // ------- Robust direct upload -------
     async function uploadDirectToSupabase(file) {
       const name = (file.name || "").toLowerCase();
       const ext = name.includes(".") ? name.split(".").pop() : "bin";
@@ -317,20 +300,22 @@
         body: JSON.stringify({ ext })
       });
 
-      if (!signResp.ok) {
-        const txt = await signResp.text();
-        throw new Error("Sign-upload failed: " + txt);
-      }
-
       const signJson = await signResp.json();
-      if (!signJson.ok || !signJson.signedUploadUrl || !signJson.key) {
-        throw new Error("Could not prepare upload.");
+      if (!signResp.ok || !signJson.ok) {
+        throw new Error("Sign-upload failed: " + JSON.stringify(signJson));
       }
 
-      const putResp = await  fetch(
-  `${signJson.signedUploadUrl}?token=${encodeURIComponent(signJson.token)}`,
-  {
-    method: "PUT",
+      // Use the signed URL exactly as given.
+      // If Supabase already included token in the URL, don't add it.
+      let uploadUrl = signJson.signedUploadUrl;
+
+      // If token is separate AND not already in URL, append it safely.
+      if (signJson.token && !uploadUrl.includes("token=")) {
+        uploadUrl += (uploadUrl.includes("?") ? "&" : "?") + "token=" + signJson.token;
+      }
+
+      const putResp = await fetch(uploadUrl, {
+        method: "PUT",
         headers: {
           "Content-Type": file.type || "application/octet-stream",
           "x-upsert": "true"
@@ -346,7 +331,7 @@
       return signJson.key;
     }
 
-    // ------- Form submit (JSON only) -------
+    // ------- Submit -------
     const formEl = $('#report-form');
     const statusMsg = $('#statusMsg');
     const submitBtn = $('#submitBtn');
