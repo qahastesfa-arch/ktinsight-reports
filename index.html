@@ -327,8 +327,10 @@
         throw new Error("Could not prepare upload.");
       }
 
-      const putResp = await fetch(signJson.signedUploadUrl, {
-        method: "PUT",
+      const putResp = await  fetch(
+  `${signJson.signedUploadUrl}?token=${encodeURIComponent(signJson.token)}`,
+  {
+    method: "PUT",
         headers: {
           "Content-Type": file.type || "application/octet-stream",
           "x-upsert": "true"
