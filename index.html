@@ -117,7 +117,6 @@
     const input = document.getElementById("login-password");
     const err = document.getElementById("login-error");
 
-    // Check session
     try {
       const r = await fetch("/api/session");
       const j = await r.json();
@@ -127,7 +126,6 @@
       }
     } catch (e) {}
 
-    // Handle login
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       err.style.display = "none";
@@ -142,9 +140,8 @@
           body: JSON.stringify({ password })
         });
 
-        if (r.ok) {
-          gate.style.display = "none";
-        } else {
+        if (r.ok) gate.style.display = "none";
+        else {
           err.textContent = "Incorrect password.";
           err.style.display = "block";
         }
@@ -289,7 +286,7 @@
       applyLang(langSel.value);
     });
 
-    // ------- Robust direct upload -------
+    // ------- SAFE direct upload (no token in URL) -------
     async function uploadDirectToSupabase(file) {
       const name = (file.name || "").toLowerCase();
       const ext = name.includes(".") ? name.split(".").pop() : "bin";
@@ -305,19 +302,36 @@
         throw new Error("Sign-upload failed: " + JSON.stringify(signJson));
       }
 
-      // Use the signed URL exactly as given.
-      // If Supabase already included token in the URL, don't add it.
       let uploadUrl = signJson.signedUploadUrl;
+      let token = signJson.token || null;
 
-      // If token is separate AND not already in URL, append it safely.
-      if (signJson.token && !uploadUrl.includes("token=")) {
-        uploadUrl += (uploadUrl.includes("?") ? "&" : "?") + "token=" + signJson.token;
+      // If token is embedded in URL (?token=...), extract it and strip from URL
+      try {
+        const u = new URL(uploadUrl);
+        if (u.searchParams.get("token")) {
+          token = u.searchParams.get("token");
+          u.searchParams.delete("token");
+          uploadUrl = u.toString();
+        }
+      } catch (e) {
+        // If URL constructor fails, fallback: manual split
+        const parts = uploadUrl.split("?token=");
+        if (parts.length === 2) {
+          uploadUrl = parts[0];
+          token = token || parts[1];
+        }
       }
 
+      if (!token) {
+        throw new Error("Upload token missing from signed URL.");
+      }
+
+      // PUT to clean URL, token in Authorization header
       const putResp = await fetch(uploadUrl, {
         method: "PUT",
         headers: {
           "Content-Type": file.type || "application/octet-stream",
+          "Authorization": `Bearer ${token}`,
           "x-upsert": "true"
         },
         body: file
