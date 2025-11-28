@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ethiopian Orthodox Church Incident Reporting</title>
 
+  <!-- Ethiopic-friendly fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wght@400;600&family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
   <style>
@@ -35,7 +36,8 @@
       border-radius: 6px; padding: 6px 10px; font-size: 0.95rem;
     }
     img.logo {
-      max-width: 240px; height: auto; margin: 6px 0 10px; filter: grayscale(20%) contrast(120%);
+      max-width: 240px; height: auto; margin: 6px 0 10px;
+      filter: grayscale(20%) contrast(120%);
     }
     h1, h2 { text-align: center; color: var(--gold); margin: 6px 0 0; }
 
@@ -62,22 +64,25 @@
 
     .status-msg{
       margin-top:14px; padding:10px; border-radius:8px; display:none;
-      background:#1e1e1e; border:1px solid #444; color:#eee; font-size:0.95rem;
-      text-align:center;
+      background:#1e1e1e; border:1px solid #444; color:#eee;
+      font-size:0.95rem; text-align:center;
     }
     .status-msg.show{ display:block; }
 
-    /* PASSWORD GATE */
+    /* =========================
+       PASSWORD LOGIN GATE STYLE
+       ========================= */
     #login-gate {
       position: fixed; inset: 0; background: white; z-index: 9999;
       display: grid; place-items: center; padding: 24px; font-family: sans-serif;
     }
     #login-form {
       width: 360px; max-width: 90vw; border: 1px solid #ddd;
-      border-radius: 12px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+      border-radius: 12px; padding: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
     }
     #login-form h2 { margin: 0 0 8px; color:#111; text-align:left; }
-    #login-form p { margin: 0 0 12px; color:#444; text-align:left; }
+    #login-form p  { margin: 0 0 12px; color:#444; text-align:left; }
     #login-password {
       width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc;
       margin-bottom: 8px; font-size: 14px;
@@ -88,18 +93,22 @@
       cursor: pointer; font-size: 15px; font-weight: 600;
       background:#111; color:#fff;
     }
+    #login-submit:hover { opacity: 0.9; }
   </style>
 </head>
 
 <body>
 
-  <!-- PASSWORD LOGIN GATE -->
+  <!-- =========================
+       PASSWORD LOGIN GATE START
+       ========================= -->
   <div id="login-gate">
     <form id="login-form">
       <h2>KT Insight Reports</h2>
       <p>Enter the shared password to continue.</p>
 
       <input id="login-password" type="password" placeholder="Password"/>
+
       <div id="login-error"></div>
 
       <button id="login-submit" type="submit">Unlock</button>
@@ -115,8 +124,9 @@
     const gate = document.getElementById("login-gate");
     const form = document.getElementById("login-form");
     const input = document.getElementById("login-password");
-    const err = document.getElementById("login-error");
+    const err  = document.getElementById("login-error");
 
+    // 1) Check session cookie via server
     try {
       const r = await fetch("/api/session");
       const j = await r.json();
@@ -124,8 +134,11 @@
         gate.style.display = "none";
         return;
       }
-    } catch (e) {}
+    } catch (e) {
+      // ignore; user will log in
+    }
 
+    // 2) Handle password submit
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       err.style.display = "none";
@@ -140,8 +153,9 @@
           body: JSON.stringify({ password })
         });
 
-        if (r.ok) gate.style.display = "none";
-        else {
+        if (r.ok) {
+          gate.style.display = "none";
+        } else {
           err.textContent = "Incorrect password.";
           err.style.display = "block";
         }
@@ -152,8 +166,14 @@
     });
   })();
   </script>
+  <!-- =======================
+       PASSWORD LOGIN GATE END
+       ======================= -->
 
-  <!-- MAIN REPORTING PAGE -->
+
+  <!-- =========================
+       MAIN REPORTING PAGE
+       ========================= -->
   <header>
     <div class="topbar">
       <label for="lang" style="font-weight:600;">🌐</label>
@@ -181,25 +201,29 @@
       </label>
 
       <label><span data-i18n="location_label">Location (City/Region)</span>:
-        <input type="text" name="location" required data-ph="location_ph">
+        <input type="text" name="location" required data-ph="location_ph" placeholder="e.g. Gondar, Amhara">
       </label>
 
       <label><span data-i18n="reporting_country_label">Country You Are Reporting From</span>:
-        <input type="text" name="reporting_country" required data-ph="country_ph">
+        <input type="text" name="reporting_country" required data-ph="country_ph" placeholder="e.g. United States, Ethiopia">
       </label>
 
+      <!-- OPTIONAL -->
       <label><span data-i18n="name_label">Your Full Name (optional)</span>:
-        <input type="text" name="reporter_name" data-ph="name_ph">
+        <input type="text" name="reporter_name" data-ph="name_ph" placeholder="Full name">
       </label>
 
+      <!-- OPTIONAL -->
       <label><span data-i18n="phone_label">Phone Number (optional)</span>:
-        <input type="tel" name="phone" data-ph="phone_ph">
+        <input type="tel" name="phone" data-ph="phone_ph" placeholder="Include country code (e.g. +251...)">
       </label>
 
       <label><span data-i18n="details_label">Detailed Account of the Incident</span>:
-        <textarea name="details" rows="6" required data-ph="details_ph"></textarea>
+        <textarea name="details" rows="6" required data-ph="details_ph"
+          placeholder="Describe what happened, when, where, and who was involved…"></textarea>
       </label>
 
+      <!-- OPTIONAL FILE -->
       <label><span data-i18n="evidence_label">Upload Photo or Evidence (optional)</span>:
         <input type="file" name="evidence" accept="image/*,application/pdf">
       </label>
@@ -217,8 +241,9 @@
     © 2025 <span data-i18n="footer_org">Ethiopian Orthodox Church Incident Reporting</span> | ktinsight.com
   </footer>
 
+
   <script>
-    // ------- i18n -------
+    // ------- i18n dictionary -------
     const t = {
       en: {
         title: "Report Violence Against the Ethiopian Orthodox Church",
@@ -286,7 +311,7 @@
       applyLang(langSel.value);
     });
 
-    // ------- SAFE direct upload (no token in URL) -------
+    // ------- Correct direct upload -------
     async function uploadDirectToSupabase(file) {
       const name = (file.name || "").toLowerCase();
       const ext = name.includes(".") ? name.split(".").pop() : "bin";
@@ -302,36 +327,23 @@
         throw new Error("Sign-upload failed: " + JSON.stringify(signJson));
       }
 
-      let uploadUrl = signJson.signedUploadUrl;
-      let token = signJson.token || null;
+      let uploadUrl = signJson.signedUploadUrl || "";
+      const token = signJson.token || null;
 
-      // If token is embedded in URL (?token=...), extract it and strip from URL
-      try {
-        const u = new URL(uploadUrl);
-        if (u.searchParams.get("token")) {
-          token = u.searchParams.get("token");
-          u.searchParams.delete("token");
-          uploadUrl = u.toString();
-        }
-      } catch (e) {
-        // If URL constructor fails, fallback: manual split
-        const parts = uploadUrl.split("?token=");
-        if (parts.length === 2) {
-          uploadUrl = parts[0];
-          token = token || parts[1];
-        }
+      // If token is separate AND URL doesn't already have one, append.
+      if (token && !uploadUrl.includes("token=")) {
+        uploadUrl += (uploadUrl.includes("?") ? "&" : "?") +
+          "token=" + encodeURIComponent(token);
       }
 
-      if (!token) {
-        throw new Error("Upload token missing from signed URL.");
+      if (!uploadUrl.includes("token=")) {
+        throw new Error("Signed upload URL missing token.");
       }
 
-      // PUT to clean URL, token in Authorization header
       const putResp = await fetch(uploadUrl, {
         method: "PUT",
         headers: {
           "Content-Type": file.type || "application/octet-stream",
-          "Authorization": `Bearer ${token}`,
           "x-upsert": "true"
         },
         body: file
@@ -345,7 +357,7 @@
       return signJson.key;
     }
 
-    // ------- Submit -------
+    // ------- Form submit (JSON only) -------
     const formEl = $('#report-form');
     const statusMsg = $('#statusMsg');
     const submitBtn = $('#submitBtn');
@@ -400,7 +412,8 @@
         showStatus("Submission failed: " + err.message, false);
       } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = t[langSel.value]?.submit_btn || "Submit Report";
+        submitBtn.textContent =
+          t[langSel.value]?.submit_btn || "Submit Report";
       }
     });
   </script>
