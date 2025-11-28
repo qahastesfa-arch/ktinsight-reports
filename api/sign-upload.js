@@ -1,6 +1,6 @@
 // api/sign-upload.js
-// Returns a signed upload URL + token for private bucket "evidence"
-// Usage: POST /api/sign-upload  body: { ext: "pdf" }
+// Returns a signed upload URL for private bucket "evidence"
+// Supabase may return { signedURL, token } OR { url, token }
 
 module.exports = async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -23,7 +23,6 @@ module.exports = async (req, res) => {
     const ext = (body.ext || "bin").toLowerCase().replace(/[^a-z0-9]/g, "");
     const key = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
-    // ✅ IMPORTANT: signed UPLOAD endpoint
     const signEndpoint =
       `${SUPABASE_URL}/storage/v1/object/upload/sign/evidence/${encodeURIComponent(key)}`;
 
@@ -42,14 +41,13 @@ module.exports = async (req, res) => {
       return res.status(500).json({ ok: false, error: "Sign failed", detail: json });
     }
 
-    let signedURL = json.signedURL;
-    const token = json.token;
-
-    if (!signedURL || !token) {
+    // ✅ Supabase may return "signedURL" or "url"
+    let signedURL = json.signedURL || json.url;
+    if (!signedURL) {
       return res.status(500).json({ ok: false, error: "Bad sign response", detail: json });
     }
 
-    // Sometimes Supabase omits /storage/v1 prefix
+    // Ensure prefix
     if (!signedURL.startsWith("/storage/v1/")) {
       signedURL = "/storage/v1" + signedURL;
     }
@@ -57,8 +55,7 @@ module.exports = async (req, res) => {
     return res.status(200).json({
       ok: true,
       key,
-      signedUploadUrl: `${SUPABASE_URL}${signedURL}`,
-      token
+      signedUploadUrl: `${SUPABASE_URL}${signedURL}`
     });
 
   } catch (e) {
