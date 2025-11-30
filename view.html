@@ -32,7 +32,7 @@
       max-width:900px; margin:30px auto 40px; padding:0 16px 24px;
     }
     .intro{
-      max-width:700px; margin:0 auto 20px; color:var(--muted);
+      max-width:760px; margin:0 auto 20px; color:var(--muted);
       text-align:center; line-height:1.6;
     }
     .status{ text-align:center; margin:16px auto; font-size:.95rem; color:#ccc; }
@@ -56,7 +56,8 @@
       color:var(--link); text-decoration:underline; text-underline-offset:2px; word-break:break-all;
     }
 
-    .card-contact{ margin-top:6px; font-size:.85rem; color:#aaa; }
+    .card-contact{ margin-top:8px; font-size:.88rem; color:#aaa; }
+    .card-contact strong{ color:#ddd; }
 
     .evidence-wrap{ margin-top:10px; display:flex; flex-direction:column; gap:6px; }
     .evidence-label{ font-size:.85rem; color:#bbb; font-weight:600; }
@@ -73,7 +74,6 @@
       color:var(--link); text-decoration:underline; text-underline-offset:2px;
     }
 
-    /* Note only on failure (hidden initially) */
     .evidence-note{
       display:none; font-size:.8rem; color:#bdbdbd; margin-top:4px;
     }
@@ -82,7 +82,6 @@
       color:var(--link); text-decoration:underline; text-underline-offset:2px;
     }
 
-    /* User-triggered help for non-images */
     .evidence-help{
       font-size:.8rem; color:#bbb; cursor:pointer;
       text-decoration:underline; text-underline-offset:2px; width:fit-content;
@@ -90,7 +89,6 @@
 
     footer{ text-align:center; margin:20px 0; font-size:.85rem; color:#777; }
 
-    /* Modal */
     .modal{
       position:fixed; inset:0; background:rgba(0,0,0,.85);
       display:none; align-items:center; justify-content:center; padding:20px; z-index:9999;
@@ -109,13 +107,16 @@
   <header>
     <img src="https://raw.githubusercontent.com/qahastesfa-arch/ktinsight-reports/main/EOTC.png"
          alt="Ethiopian Orthodox Church Logo" class="logo">
-    <h1>Recent Approved Incident Reports</h1>
+    <h1>Incident Reports Reviewed by the Admin</h1>
   </header>
 
   <main>
     <p class="intro">
-      This page shows approved reports. Any links included in a report can be clicked.
-      Evidence files open through a secure, time-limited link.
+      This page is part of an incident-tracking database created by concerned supporters and worshipers of the
+      Ethiopian Orthodox Tewahedo Church (EOTC). It documents verified reports of violence, persecution, or
+      vandalism directed against the Ethiopian Orthodox Church, its worshipers, clergy, and church property.
+      <br><br>
+      Any links included in a report can be clicked. Evidence files open through secure, time-limited links.
     </p>
 
     <div id="status" class="status">Loading latest reports…</div>
@@ -155,6 +156,27 @@
       return k.match(/\.(png|jpg|jpeg|gif|webp|bmp|svg)(\?.*)?$/);
     }
 
+    // Parse contact JSON and format nicely
+    function formatContact(raw){
+      if(!raw) return "";
+      let obj = null;
+
+      try {
+        obj = (typeof raw === "string") ? JSON.parse(raw) : raw;
+      } catch(e){
+        return escapeHtml(raw);
+      }
+
+      if(!obj || typeof obj !== "object") return "";
+
+      const parts = [];
+      if(obj.name) parts.push(`Name: ${escapeHtml(obj.name)}`);
+      if(obj.phone) parts.push(`Phone: ${escapeHtml(obj.phone)}`);
+      if(obj.reporting_country) parts.push(`Reporting From: ${escapeHtml(obj.reporting_country)}`);
+
+      return parts.join(" | ");
+    }
+
     async function loadIncidents(){
       const statusEl = document.getElementById('status');
       const listEl = document.getElementById('list');
@@ -170,11 +192,11 @@
 
         const data = await resp.json();
         if(!Array.isArray(data) || data.length === 0){
-          statusEl.textContent = 'No approved incident reports yet.';
+          statusEl.textContent = 'No reviewed incident reports yet.';
           return;
         }
 
-        statusEl.textContent = `Showing ${data.length} most recent approved report(s).`;
+        statusEl.textContent = `Showing ${data.length} most recent reviewed report(s).`;
 
         const html = data.map(inc => {
           const reportedAt = inc.reported_at
@@ -183,14 +205,10 @@
 
           const region = escapeHtml(inc.region || 'Unknown location');
           const summaryHtml = linkify(inc.summary || '');
-          const contact = escapeHtml(inc.contact || '');
+          const contactFormatted = formatContact(inc.contact);
           const evidenceRaw = inc.evidence_url || '';
 
-          // Normalize storage key:
-          // supports "evidence/xxx.pdf" or "xxx.pdf"
           const evidenceKey = evidenceRaw.replace(/^evidence\//, '');
-
-          // ✅ IMPORTANT: always use proxy for opening evidence
           const evidenceLink = evidenceKey
             ? `/api/evidence?key=${encodeURIComponent(evidenceKey)}`
             : '';
@@ -247,7 +265,11 @@
 
               <div class="card-summary">${summaryHtml}</div>
 
-              ${contact ? `<div class="card-contact"><strong>Contact:</strong> ${contact}</div>` : ''}
+              ${
+                contactFormatted
+                  ? `<div class="card-contact"><strong>Source/Contact:</strong> ${contactFormatted}</div>`
+                  : ''
+              }
 
               ${evidenceBlock}
             </article>
