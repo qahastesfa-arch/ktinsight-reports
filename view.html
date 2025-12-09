@@ -77,11 +77,28 @@
     .card-date{ font-weight:600; color:var(--gold); font-size:.98rem; }
     .card-location{ font-size:.95rem; color:var(--muted); }
 
+    /* ✅ Summary clamp to 3 lines */
     .card-summary{
       margin-top:4px; font-size:.97rem; line-height:1.55; white-space:pre-wrap;
     }
     .card-summary a{
       color:var(--link); text-decoration:underline; text-underline-offset:2px; word-break:break-all;
+    }
+    .summary-collapsed{
+      display: -webkit-box;
+      -webkit-line-clamp: 3;          /* ✅ show only 3 lines */
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .see-more{
+      margin-top:6px;
+      font-size:.9rem;
+      color: var(--link);
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      display: none; /* auto-enabled only if needed */
+      width: fit-content;
     }
 
     .card-contact{ margin-top:8px; font-size:.88rem; color:#aaa; }
@@ -147,7 +164,6 @@
       Any links included in a report can be clicked. Evidence files open through secure, time-limited links.
     </p>
 
-    <!-- ✅ Featured video highlight (centered under intro) -->
     <div class="video-feature">
       <iframe
         src="https://www.youtube.com/embed/xUjKXomeogI?si=jK1nmums7Hk4lnF3"
@@ -197,24 +213,19 @@
       return k.match(/\.(png|jpg|jpeg|gif|webp|bmp|svg)(\?.*)?$/);
     }
 
-    // Parse contact JSON and format nicely
     function formatContact(raw){
       if(!raw) return "";
       let obj = null;
-
       try {
         obj = (typeof raw === "string") ? JSON.parse(raw) : raw;
       } catch(e){
         return escapeHtml(raw);
       }
-
       if(!obj || typeof obj !== "object") return "";
-
       const parts = [];
       if(obj.name) parts.push(`Name: ${escapeHtml(obj.name)}`);
       if(obj.phone) parts.push(`Phone: ${escapeHtml(obj.phone)}`);
       if(obj.reporting_country) parts.push(`Reporting From: ${escapeHtml(obj.reporting_country)}`);
-
       return parts.join(" | ");
     }
 
@@ -239,7 +250,7 @@
 
         statusEl.textContent = `Showing ${data.length} most recent reviewed report(s).`;
 
-        const html = data.map(inc => {
+        const html = data.map((inc, idx) => {
           const reportedAt = inc.reported_at
             ? new Date(inc.reported_at).toLocaleString()
             : 'Unknown date';
@@ -304,7 +315,10 @@
                 <div class="card-location">${region}</div>
               </div>
 
-              <div class="card-summary">${summaryHtml}</div>
+              <div class="card-summary summary-collapsed" id="summary-${idx}">
+                ${summaryHtml}
+              </div>
+              <div class="see-more" data-target="summary-${idx}">See more</div>
 
               ${
                 contactFormatted
@@ -318,6 +332,26 @@
         }).join('');
 
         listEl.innerHTML = html;
+
+        // ✅ Enable/hide "See more" only when needed + toggle
+        requestAnimationFrame(() => {
+          listEl.querySelectorAll('.see-more').forEach(btn => {
+            const id = btn.getAttribute('data-target');
+            const summary = document.getElementById(id);
+            if(!summary) return;
+
+            // If clamped height is smaller than full content → show button
+            const isOverflowing = summary.scrollHeight > summary.clientHeight + 2;
+            if(isOverflowing){
+              btn.style.display = 'inline-block';
+            }
+
+            btn.addEventListener('click', () => {
+              const collapsed = summary.classList.toggle('summary-collapsed');
+              btn.textContent = collapsed ? 'See more' : 'See less';
+            });
+          });
+        });
 
         // Modal + auto-failure note for images
         const modal = document.getElementById('modal');
