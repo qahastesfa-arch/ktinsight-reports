@@ -94,6 +94,11 @@
       background:#111; color:#fff;
     }
     #login-submit:hover { opacity: 0.9; }
+
+    /* Small helper for evidence selection summary */
+    .file-hint{
+      margin-top:6px; color:#bbb; font-size:.85rem;
+    }
   </style>
 </head>
 
@@ -134,9 +139,7 @@
         gate.style.display = "none";
         return;
       }
-    } catch (e) {
-      // ignore; user will log in
-    }
+    } catch (e) {}
 
     // 2) Handle password submit
     form.addEventListener("submit", async (e) => {
@@ -223,9 +226,19 @@
           placeholder="Describe what happened, when, where, and who was involved…"></textarea>
       </label>
 
-      <!-- OPTIONAL FILE -->
-      <label><span data-i18n="evidence_label">Upload Photo or Evidence (optional)</span>:
-        <input type="file" name="evidence" accept="image/*,application/pdf">
+      <!-- OPTIONAL FILES (NEW) -->
+      <label>
+        <span data-i18n="evidence_label">Upload Evidence (optional)</span>:
+        <input
+          id="evidence"
+          type="file"
+          name="evidence"
+          accept="image/*,application/pdf"
+          multiple
+        >
+        <div class="file-hint" data-i18n="evidence_hint">
+          Optional. You may upload up to 2 files: 1 image (PNG/JPG/etc) and 1 PDF.
+        </div>
       </label>
 
       <div class="helper" data-i18n="privacy_note">
@@ -255,7 +268,8 @@
         name_label: "Your Full Name (optional)",
         phone_label: "Phone Number (optional)",
         details_label: "Detailed Account of the Incident",
-        evidence_label: "Upload Photo or Evidence (optional)",
+        evidence_label: "Upload Evidence (optional)",
+        evidence_hint: "Optional. You may upload up to 2 files: 1 image (PNG/JPG/etc) and 1 PDF.",
         privacy_note: "Providing your name, phone number, and any photo or evidence is optional. You may leave these fields blank if you feel unsafe.",
         submit_btn: "Submit Report",
         footer_org: "Ethiopian Orthodox Church Incident Reporting",
@@ -275,7 +289,8 @@
         name_label: "ሙሉ ስምዎ (አማራጭ)",
         phone_label: "ስልክ ቁጥር (አማራጭ)",
         details_label: "የክስተቱ ዝርዝር መግለጫ",
-        evidence_label: "ፎቶ ወይም ማስረጃ ማስገቢያ (አማራጭ)",
+        evidence_label: "ፎቶ/ማስረጃ ማስገቢያ (አማራጭ)",
+        evidence_hint: "አማራጭ ነው። እስከ 2 ፋይል መስጠት ይችላሉ: 1 ፎቶ እና 1 PDF።",
         privacy_note: "ስምዎን፣ ስልክ ቁጥርዎን ወይም ፎቶ/ማስረጃ መስጠት አማራጭ ነው።",
         submit_btn: "ሪፖርት ያስገቡ",
         footer_org: "የኢ.ኦ.ተ. የክስተት ሪፖርት መድረክ",
@@ -311,7 +326,7 @@
       applyLang(langSel.value);
     });
 
-    // ------- Correct direct upload -------
+    // ------- Direct upload via /api/sign-upload -------
     async function uploadDirectToSupabase(file) {
       const name = (file.name || "").toLowerCase();
       const ext = name.includes(".") ? name.split(".").pop() : "bin";
@@ -330,7 +345,6 @@
       let uploadUrl = signJson.signedUploadUrl || "";
       const token = signJson.token || null;
 
-      // If token is separate AND URL doesn't already have one, append.
       if (token && !uploadUrl.includes("token=")) {
         uploadUrl += (uploadUrl.includes("?") ? "&" : "?") +
           "token=" + encodeURIComponent(token);
@@ -357,16 +371,26 @@
       return signJson.key;
     }
 
-    // ------- Form submit (JSON only) -------
+    // ------- Form submit -------
     const formEl = $('#report-form');
     const statusMsg = $('#statusMsg');
     const submitBtn = $('#submitBtn');
+    const evidenceInput = $('#evidence');
 
     function showStatus(msg, ok=true){
       statusMsg.textContent = msg;
       statusMsg.style.borderColor = ok ? "#2d6a2d" : "#7a2222";
       statusMsg.style.background = ok ? "#102010" : "#2a1010";
       statusMsg.classList.add("show");
+    }
+
+    function isPdf(file){
+      const n = (file.name || "").toLowerCase();
+      return file.type === "application/pdf" || n.endsWith(".pdf");
+    }
+
+    function isImage(file){
+      return (file.type || "").startsWith("image/");
     }
 
     formEl.addEventListener("submit", async (e) => {
@@ -378,11 +402,26 @@
 
       try {
         const fd = new FormData(formEl);
-        const file = fd.get("evidence");
-        let evidence_key = null;
 
-        if (file && file.size > 0) {
-          evidence_key = await uploadDirectToSupabase(file);
+        // NEW: multiple evidence files
+        const files = Array.from(evidenceInput.files || []).filter(f => f && f.size > 0);
+
+        if (files.length > 2) {
+          throw new Error("Please upload no more than 2 files (1 image and 1 PDF).");
+        }
+
+        const images = files.filter(isImage);
+        const pdfs   = files.filter(isPdf);
+
+        if (images.length > 1 || pdfs.length > 1) {
+          throw new Error("Please upload at most one image and one PDF.");
+        }
+
+        // Upload in sequence (simple + reliable)
+        const evidence_keys = [];
+        for (const file of files) {
+          const key = await uploadDirectToSupabase(file);
+          evidence_keys.push(key);
         }
 
         const payload = {
@@ -392,7 +431,7 @@
           reporter_name: fd.get("reporter_name"),
           phone: fd.get("phone"),
           details: fd.get("details"),
-          evidence_key
+          evidence_keys  // ✅ NEW (array)
         };
 
         const r = await fetch("/api/report", {
