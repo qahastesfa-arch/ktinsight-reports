@@ -38,7 +38,6 @@
       text-align:center; line-height:1.6;
     }
 
-    /* ✅ Featured video highlight */
     .video-feature{
       max-width: 760px;
       margin: 18px auto 26px;
@@ -77,7 +76,6 @@
     .card-date{ font-weight:600; color:var(--gold); font-size:.98rem; }
     .card-location{ font-size:.95rem; color:var(--muted); }
 
-    /* ✅ Summary clamp to 7 lines */
     .card-summary{
       margin-top:4px; font-size:.97rem; line-height:1.55; white-space:pre-wrap;
     }
@@ -86,7 +84,7 @@
     }
     .summary-collapsed{
       display: -webkit-box;
-      -webkit-line-clamp: 7;          /* ✅ show only 7 lines */
+      -webkit-line-clamp: 7;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
@@ -97,15 +95,17 @@
       cursor: pointer;
       text-decoration: underline;
       text-underline-offset: 2px;
-      display: none; /* auto-enabled only if needed */
+      display: none;
       width: fit-content;
     }
 
     .card-contact{ margin-top:8px; font-size:.88rem; color:#aaa; }
     .card-contact strong{ color:#ddd; }
 
-    .evidence-wrap{ margin-top:10px; display:flex; flex-direction:column; gap:6px; }
+    .evidence-wrap{ margin-top:10px; display:flex; flex-direction:column; gap:10px; }
     .evidence-label{ font-size:.85rem; color:#bbb; font-weight:600; }
+    .evidence-item{ display:flex; flex-direction:column; gap:6px; }
+
     .evidence-img{
       width:100%; max-width:420px; border-radius:8px; border:1px solid #444; cursor:pointer;
       transition:transform .15s ease, border .15s ease;
@@ -210,23 +210,53 @@
     function looksLikeImage(key){
       if(!key) return false;
       const k = key.toLowerCase();
-      return k.match(/\.(png|jpg|jpeg|gif|webp|bmp|svg)(\?.*)?$/);
+      return /\.(png|jpg|jpeg|gif|webp|bmp|svg)(\?.*)?$/.test(k);
     }
 
+    // Parse contact JSON and format nicely
     function formatContact(raw){
       if(!raw) return "";
       let obj = null;
-      try {
-        obj = (typeof raw === "string") ? JSON.parse(raw) : raw;
-      } catch(e){
-        return escapeHtml(raw);
-      }
+      try { obj = (typeof raw === "string") ? JSON.parse(raw) : raw; }
+      catch(e){ return escapeHtml(raw); }
+
       if(!obj || typeof obj !== "object") return "";
       const parts = [];
       if(obj.name) parts.push(`Name: ${escapeHtml(obj.name)}`);
       if(obj.phone) parts.push(`Phone: ${escapeHtml(obj.phone)}`);
       if(obj.reporting_country) parts.push(`Reporting From: ${escapeHtml(obj.reporting_country)}`);
       return parts.join(" | ");
+    }
+
+    // ✅ NEW: Normalize evidence_url into an array of keys
+    function parseEvidenceKeys(evidence_url){
+      if(!evidence_url) return [];
+
+      // If already an array
+      if(Array.isArray(evidence_url)){
+        return evidence_url.map(String).map(s => s.trim()).filter(Boolean).map(k => k.replace(/^evidence\//,''));
+      }
+
+      const raw = String(evidence_url).trim();
+
+      // If it's a JSON array string
+      if(raw.startsWith("[") && raw.endsWith("]")){
+        try{
+          const arr = JSON.parse(raw);
+          if(Array.isArray(arr)){
+            return arr.map(String).map(s => s.trim()).filter(Boolean).map(k => k.replace(/^evidence\//,''));
+          }
+        }catch(e){
+          // fall through
+        }
+      }
+
+      // Otherwise treat as single key
+      return [raw.replace(/^evidence\//,'')].filter(Boolean);
+    }
+
+    function evidenceLinkForKey(key){
+      return `/api/evidence?key=${encodeURIComponent(key)}`;
     }
 
     async function loadIncidents(){
@@ -250,6 +280,13 @@
 
         statusEl.textContent = `Showing ${data.length} most recent reviewed report(s).`;
 
+        const noteHtml = `
+          <div class="evidence-note">
+            If this evidence does not open or is unavailable, please contact the admin at
+            <a href="mailto:sales@ktinsight.com">sales@ktinsight.com</a>.
+          </div>
+        `;
+
         const html = data.map((inc, idx) => {
           const reportedAt = inc.reported_at
             ? new Date(inc.reported_at).toLocaleString()
@@ -258,53 +295,48 @@
           const region = escapeHtml(inc.region || 'Unknown location');
           const summaryHtml = linkify(inc.summary || '');
           const contactFormatted = formatContact(inc.contact);
-          const evidenceRaw = inc.evidence_url || '';
 
-          const evidenceKey = evidenceRaw.replace(/^evidence\//, '');
-          const evidenceLink = evidenceKey
-            ? `/api/evidence?key=${encodeURIComponent(evidenceKey)}`
-            : '';
+          const keys = parseEvidenceKeys(inc.evidence_url);
 
-          const noteHtml = `
-            <div class="evidence-note">
-              If this evidence does not open or is unavailable, please contact the admin at
-              <a href="mailto:sales@ktinsight.com">sales@ktinsight.com</a>.
-            </div>
-          `;
-
-          const evidenceBlock = evidenceKey ? `
+          const evidenceBlock = keys.length ? `
             <div class="evidence-wrap">
               <div class="evidence-label">Evidence</div>
-              ${
-                looksLikeImage(evidenceKey)
-                  ? `
-                    <img class="evidence-img"
-                         src="${escapeHtml(evidenceLink)}"
-                         alt="Evidence image"
-                         data-full="${escapeHtml(evidenceLink)}">
-                    <div class="evidence-link">
-                      Open original:
-                      <a href="${escapeHtml(evidenceLink)}" target="_blank" rel="noopener noreferrer">
-                        Click to open full image
-                      </a>
+              ${keys.map((key, kidx) => {
+                const link = evidenceLinkForKey(key);
+
+                if(looksLikeImage(key)){
+                  return `
+                    <div class="evidence-item">
+                      <img class="evidence-img"
+                           src="${escapeHtml(link)}"
+                           alt="Evidence image"
+                           data-full="${escapeHtml(link)}">
+                      <div class="evidence-link">
+                        Open original:
+                        <a href="${escapeHtml(link)}" target="_blank" rel="noopener noreferrer">
+                          Click to open full image
+                        </a>
+                      </div>
+                      ${noteHtml}
                     </div>
-                    ${noteHtml}
-                  `
-                  : `
+                  `;
+                }
+
+                // non-image (PDF etc)
+                return `
+                  <div class="evidence-item">
                     <div class="evidence-link">
                       Evidence file:
-                      <a href="${escapeHtml(evidenceLink)}" target="_blank" rel="noopener noreferrer">
-                        Click to open
-                      </a>
+                      <a href="${escapeHtml(link)}" target="_blank" rel="noopener noreferrer">Click to open</a>
                       <div style="margin-top:4px;font-size:0.8rem;color:#bdbdbd;">
-                        ${escapeHtml(evidenceKey)}
+                        ${escapeHtml(key)}
                       </div>
                     </div>
-
                     <div class="evidence-help">Evidence not opening?</div>
                     ${noteHtml}
-                  `
-              }
+                  </div>
+                `;
+              }).join('')}
             </div>
           ` : '';
 
@@ -333,14 +365,13 @@
 
         listEl.innerHTML = html;
 
-        // ✅ Enable/hide "See more" only when needed + toggle
+        // Enable/hide "See more" only when needed + toggle
         requestAnimationFrame(() => {
           listEl.querySelectorAll('.see-more').forEach(btn => {
             const id = btn.getAttribute('data-target');
             const summary = document.getElementById(id);
             if(!summary) return;
 
-            // If clamped height is smaller than full content → show button
             const isOverflowing = summary.scrollHeight > summary.clientHeight + 2;
             if(isOverflowing){
               btn.style.display = 'inline-block';
@@ -359,7 +390,7 @@
         const modalClose = document.getElementById('modalClose');
 
         listEl.querySelectorAll('.evidence-img').forEach(img => {
-          const wrap = img.closest('.evidence-wrap');
+          const wrap = img.closest('.evidence-item');
           const note = wrap ? wrap.querySelector('.evidence-note') : null;
 
           img.addEventListener('error', () => {
@@ -380,20 +411,14 @@
         }
 
         modalClose.addEventListener('click', closeModal);
-        modal.addEventListener('click', (e)=> {
-          if(e.target === modal) closeModal();
-        });
-        document.addEventListener('keydown', (e)=> {
-          if(e.key === 'Escape') closeModal();
-        });
+        modal.addEventListener('click', (e)=> { if(e.target === modal) closeModal(); });
+        document.addEventListener('keydown', (e)=> { if(e.key === 'Escape') closeModal(); });
 
         // Non-image evidence: show note only if user clicks help
         listEl.querySelectorAll('.evidence-help').forEach(btn => {
-          const wrap = btn.closest('.evidence-wrap');
+          const wrap = btn.closest('.evidence-item');
           const note = wrap ? wrap.querySelector('.evidence-note') : null;
-          btn.addEventListener('click', () => {
-            if(note) note.classList.add('show');
-          });
+          btn.addEventListener('click', () => { if(note) note.classList.add('show'); });
         });
 
       } catch(err){
