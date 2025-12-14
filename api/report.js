@@ -1,7 +1,11 @@
 // api/report.js
 // Accepts incident reports as JSON only.
-// Expects evidence_key if evidence was uploaded separately.
+// Supports multiple evidence uploads via evidence_keys (array).
+// Backward compatible with evidence_key (single).
 // Inserts into public.incidents with status='pending'.
+//
+// DB write:
+// evidence_url = JSON string of array (e.g. '["a.png","b.pdf"]') OR null
 
 module.exports = async (req, res) => {
   // CORS
@@ -30,7 +34,34 @@ module.exports = async (req, res) => {
     const reporterName = fields.reporter_name || "";
     const phone = fields.phone || "";
     const details = fields.details || fields.summary || "";
-    const evidenceKey = fields.evidence_key || null;
+
+    // ✅ Evidence (new + backward compatible)
+    let evidenceKeys = [];
+
+    if (Array.isArray(fields.evidence_keys)) {
+      evidenceKeys = fields.evidence_keys
+        .filter(Boolean)
+        .map(String)
+        .map(s => s.trim())
+        .filter(Boolean);
+    } else if (fields.evidence_key) {
+      evidenceKeys = [String(fields.evidence_key).trim()].filter(Boolean);
+    }
+
+    // ✅ Enforce: up to 2 files: max 1 image + max 1 PDF
+    if (evidenceKeys.length > 2) {
+      return res.status(400).json({ error: "Too many evidence files. Max is 2 (1 image + 1 PDF)." });
+    }
+
+    const isPdfKey = (k) => k.toLowerCase().endsWith(".pdf");
+    const isImageKey = (k) => /\.(png|jpg|jpeg|gif|webp|bmp|svg)$/i.test(k);
+
+    const pdfCount = evidenceKeys.filter(isPdfKey).length;
+    const imgCount = evidenceKeys.filter(isImageKey).length;
+
+    if (pdfCount > 1 || imgCount > 1) {
+      return res.status(400).json({ error: "Please upload at most one image and one PDF." });
+    }
 
     if (!incidentDate || !location || !reportingCountry || !details) {
       return res.status(400).json({
@@ -43,12 +74,16 @@ module.exports = async (req, res) => {
     const region = location.trim();
     const summary = details.trim();
     const category = fields.category || "violence";
+
     const contactObj = {
       name: reporterName.trim() || null,
       phone: phone.trim() || null,
-      reporting_country: reportingCountry.trim()
+      reporting_country: String(reportingCountry).trim()
     };
     const contact = JSON.stringify(contactObj);
+
+    // Store evidence as JSON string array in the existing evidence_url column
+    const evidence_url = evidenceKeys.length ? JSON.stringify(evidenceKeys) : null;
 
     const payload = [{
       reported_at,
@@ -56,7 +91,7 @@ module.exports = async (req, res) => {
       summary,
       category,
       contact,
-      evidence_url: evidenceKey,
+      evidence_url,
       status: "pending"
     }];
 
@@ -84,7 +119,7 @@ module.exports = async (req, res) => {
       ok: true,
       id: inserted?.id,
       created_at: inserted?.reported_at,
-      evidence_key: evidenceKey
+      evidence_keys: evidenceKeys
     });
 
   } catch (err) {
